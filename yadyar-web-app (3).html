@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#7C3AED">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="یادیار">
+<title>یادیار — دستیار هوشمند کارها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p1:#7C3AED; --p2:#EC4899; --p3:#F59E0B; --ok:#10B981; --danger:#EF4444;
+  --bg:#F6F4FF; --card:#FFFFFF; --card2:#F8F6FF; --text:#1E1B2E; --muted:#6E6A85;
+  --line:#ECE8F7; --shadow:0 8px 28px rgba(124,58,237,.12);
+  --r:20px;
+}
+[data-theme="dark"]{
+  --bg:#17131F; --card:#221C31; --card2:#2A2340; --text:#F3F0FA; --muted:#A9A2C0;
+  --line:#37304E; --shadow:0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; padding:0}
+body{
+  font-family:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--text); min-height:100vh;
+  overscroll-behavior-y:none;
+}
+button{font-family:inherit; border:none; cursor:pointer; background:none; color:inherit}
+input,select,textarea{font-family:inherit; color:var(--text)}
+.hidden{display:none !important}
+.grad{background:linear-gradient(135deg,var(--p1),var(--p2))}
+.grad-txt{background:linear-gradient(135deg,var(--p1),var(--p2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+/* ---------- Auth ---------- */
+#authScreen{position:fixed; inset:0; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; overflow:auto;
+  background:linear-gradient(150deg,#7C3AED 0%,#9F5BFF 35%,#EC4899 100%);}
+#authScreen .blob{position:absolute; border-radius:50%; filter:blur(60px); opacity:.35; pointer-events:none}
+.logo-big{width:86px; height:86px; border-radius:28px; background:rgba(255,255,255,.18); backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center; font-size:44px; box-shadow:0 10px 30px rgba(0,0,0,.2); border:1px solid rgba(255,255,255,.35)}
+.auth-title{color:#fff; font-size:26px; font-weight:800; margin:14px 0 2px; text-align:center}
+.auth-sub{color:rgba(255,255,255,.85); font-size:13.5px; text-align:center; margin-bottom:20px}
+.auth-card{background:var(--card); border-radius:24px; padding:22px 20px; width:100%; max-width:380px; box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.auth-tabs{display:flex; background:var(--card2); border-radius:14px; padding:4px; margin-bottom:16px}
+.auth-tabs button{flex:1; padding:9px; border-radius:11px; font-weight:700; font-size:14px; color:var(--muted)}
+.auth-tabs button.on{background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.field{margin-bottom:12px}
+.field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:5px; font-weight:600}
+.field input,.field select,.field textarea{width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:13px; background:var(--card2); font-size:15px; outline:none; transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--p1)}
+.btn-main{width:100%; padding:14px; border-radius:14px; color:#fff; font-size:16px; font-weight:800; box-shadow:0 8px 20px rgba(124,58,237,.35); transition:transform .1s}
+.btn-main:active{transform:scale(.97)}
+.auth-err{background:rgba(239,68,68,.1); color:var(--danger); border:1px solid rgba(239,68,68,.3); border-radius:12px; padding:9px 12px; font-size:13px; margin-bottom:12px}
+.auth-guest{margin-top:12px; width:100%; text-align:center; font-size:13.5px; color:var(--p1); font-weight:700; padding:10px; border:1.5px dashed var(--p1); border-radius:13px; opacity:.9}
+.auth-note{color:var(--muted); font-size:11.5px; line-height:1.9; text-align:center; margin-top:14px}
+
+/* ---------- App shell ---------- */
+#app{display:flex; flex-direction:column; min-height:100vh}
+header.app-hdr{position:sticky; top:0; z-index:40; padding:14px 18px 14px; color:#fff;
+  background:linear-gradient(135deg,#7C3AED,#EC4899); border-radius:0 0 26px 26px; box-shadow:0 6px 24px rgba(124,58,237,.35)}
+.hdr-row{display:flex; align-items:center; gap:10px}
+.hdr-greet{flex:1; min-width:0}
+.hdr-greet .h1{font-size:17px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.hdr-greet .h2{font-size:12px; opacity:.85; margin-top:2px}
+.hdr-btn{width:38px; height:38px; border-radius:13px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.25);
+  display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff; flex:none}
+.hdr-btn.badge{position:relative}
+.hdr-btn.badge::after{content:''; position:absolute; top:6px; inset-inline-start:6px; width:8px; height:8px; border-radius:50%; background:#FDE047; box-shadow:0 0 0 2px rgba(124,58,237,.6)}
+
+main{flex:1; padding:14px 14px 96px; max-width:640px; width:100%; margin:0 auto}
+.view{display:none; animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+/* bottom nav */
+nav.bottom{position:fixed; bottom:0; inset-inline:0; z-index:50; display:flex; justify-content:center; padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter:blur(14px); border-top:1px solid var(--line)}
+.nav-in{display:flex; gap:2px; width:100%; max-width:520px}
+.nav-in button{flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:7px 2px; border-radius:14px; font-size:10.5px; font-weight:700; color:var(--muted); transition:all .2s}
+.nav-in button .ic{font-size:19px; line-height:1}
+.nav-in button.on{color:#fff; background:linear-gradient(135deg,var(--p1),var(--p2)); box-shadow:0 6px 16px rgba(124,58,237,.4)}
+
+/* ---------- Chat ---------- */
+#upcomingStrip{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:8px; scrollbar-width:none}
+#upcomingStrip::-webkit-scrollbar{display:none}
+.up-chip{flex:none; background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:8px 12px; font-size:11.5px; font-weight:700; box-shadow:var(--shadow); cursor:pointer; max-width:220px}
+.up-chip .t{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px}
+.up-chip .w{color:var(--p1); font-size:10.5px}
+.up-chip.over{border-color:rgba(239,68,68,.4)} .up-chip.over .w{color:var(--danger)}
+
+#chatLog{display:flex; flex-direction:column; gap:10px; padding:6px 0 12px}
+.msg{max-width:86%; padding:11px 14px; border-radius:18px; font-size:14.5px; line-height:1.9; white-space:pre-wrap; word-break:break-word; animation:pop .18s ease}
+@keyframes pop{from{opacity:0; transform:scale(.96)} to{opacity:1; transform:none}}
+.msg.user{align-self:flex-start; background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; border-radius:18px 18px 18px 4px; box-shadow:0 5px 15px rgba(124,58,237,.3)}
+.msg.bot{align-self:flex-end; background:var(--card); border:1.5px solid var(--line); border-radius:18px 18px 4px 18px; box-shadow:var(--shadow)}
+.msg .emo{font-size:17px}
+.typing{display:inline-flex; gap:4px; padding:6px 2px}
+.typing i{width:7px; height:7px; border-radius:50%; background:var(--p2); animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25; transform:scale(.8)} 40%{opacity:1; transform:scale(1.1)}}
+
+/* task confirm card inside chat */
+.confirm-card{background:var(--card2); border:1.5px solid var(--line); border-radius:16px; padding:13px; margin-top:9px; font-size:13.5px}
+.confirm-card .fld{margin-bottom:10px}
+.confirm-card .fld:last-child{margin-bottom:0}
+.confirm-card label{display:block; font-size:11px; color:var(--muted); font-weight:700; margin-bottom:4px}
+.confirm-card input,.confirm-card select{width:100%; padding:9px 11px; border:1.5px solid var(--line); border-radius:11px; background:var(--card); font-size:14px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{padding:6px 11px; border-radius:999px; border:1.5px solid var(--line); background:var(--card); font-size:12px; font-weight:700; color:var(--muted); transition:all .15s}
+.chip.on{background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; border-color:transparent; box-shadow:0 4px 10px rgba(124,58,237,.35)}
+.confirm-actions{display:flex; gap:8px; margin-top:12px}
+.btn-sm{flex:1; padding:11px; border-radius:12px; font-weight:800; font-size:13.5px}
+.btn-ok{background:linear-gradient(135deg,var(--ok),#34D399); color:#fff; box-shadow:0 5px 14px rgba(16,185,129,.35)}
+.btn-ghost{border:1.5px solid var(--line); color:var(--muted)}
+
+.chips-suggest{display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 10px}
+.chips-suggest .chip{font-size:12px}
+
+/* input bar */
+.chat-bar{position:sticky; bottom:70px; display:flex; gap:8px; align-items:flex-end; background:var(--card); border:1.5px solid var(--line);
+  border-radius:24px; padding:8px; box-shadow:0 10px 30px rgba(124,58,237,.18)}
+.chat-bar textarea{flex:1; border:none; background:none; resize:none; outline:none; font-size:15px; line-height:1.7; max-height:110px; padding:8px 4px}
+.icon-btn{width:42px; height:42px; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:19px; flex:none; transition:all .15s}
+.icon-btn:active{transform:scale(.9)}
+.icon-btn.send{background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; box-shadow:0 5px 14px rgba(124,58,237,.4)}
+.icon-btn.mic{background:rgba(124,58,237,.1); color:var(--p1)}
+.icon-btn.rec{background:rgba(239,68,68,.08); color:var(--danger)}
+.icon-btn.rec.on{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)} 50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+
+/* mic overlay */
+#micOverlay{position:fixed; inset:0; z-index:90; background:rgba(23,15,40,.75); backdrop-filter:blur(10px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:24px; text-align:center}
+.mic-ring{width:130px; height:130px; border-radius:50%; background:linear-gradient(135deg,var(--p1),var(--p2)); display:flex; align-items:center; justify-content:center; font-size:52px;
+  box-shadow:0 0 0 14px rgba(124,58,237,.2), 0 0 0 30px rgba(124,58,237,.1); animation:micpulse 1.5s infinite}
+@keyframes micpulse{0%,100%{transform:scale(1)} 50%{transform:scale(1.06)}}
+#micText{color:#fff; font-size:19px; line-height:2; max-width:480px; min-height:60px; font-weight:600}
+.mic-hint{color:rgba(255,255,255,.65); font-size:12.5px}
+.mic-stop{margin-top:6px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); color:#fff; padding:11px 26px; border-radius:999px; font-weight:800; font-size:14px}
+
+/* ---------- Tasks ---------- */
+.filters{display:flex; gap:7px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px; scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters .chip{flex:none}
+.group-title{font-size:12.5px; font-weight:800; color:var(--muted); margin:14px 4px 8px; display:flex; align-items:center; gap:6px}
+.group-title .n{background:var(--card2); border:1px solid var(--line); border-radius:999px; padding:1px 8px; font-size:11px}
+.task{display:flex; align-items:flex-start; gap:11px; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:12px 13px; margin-bottom:8px; box-shadow:var(--shadow); animation:pop .18s ease}
+.task .tick{width:26px; height:26px; border-radius:50%; border:2px solid var(--line); flex:none; margin-top:2px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; transition:all .2s}
+.task .tick:hover{border-color:var(--ok)}
+.task.done .tick{background:var(--ok); border-color:var(--ok)}
+.task.done .t-title{text-decoration:line-through; opacity:.55}
+.task .body{flex:1; min-width:0}
+.task .t-title{font-size:14.5px; font-weight:700; line-height:1.7; word-break:break-word}
+.task .t-meta{display:flex; flex-wrap:wrap; gap:5px; margin-top:6px}
+.tag{font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--card2); border:1px solid var(--line); color:var(--muted)}
+.tag.time{color:var(--p1); border-color:rgba(124,58,237,.3); background:rgba(124,58,237,.06)}
+.tag.over{color:var(--danger); border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.07)}
+.task.overdue{border-color:rgba(239,68,68,.35)}
+.task.done{opacity:.75}
+.pdot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-inline-start:5px; vertical-align:middle}
+.pdot.high{background:var(--danger)} .pdot.med{background:var(--p3)} .pdot.low{background:var(--ok)}
+.empty{text-align:center; color:var(--muted); padding:44px 20px; font-size:14px; line-height:2.2}
+.empty .big{font-size:46px; display:block; margin-bottom:8px}
+
+/* ---------- Calendar ---------- */
+.cal-card{background:var(--card); border:1.5px solid var(--line); border-radius:var(--r); padding:14px; box-shadow:var(--shadow)}
+.cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+.cal-head .cm{font-size:15.5px; font-weight:800}
+.cal-head button{width:36px; height:36px; border-radius:12px; background:var(--card2); border:1px solid var(--line); font-size:16px; color:var(--muted)}
+.cal-week{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:4px}
+.cal-week span{text-align:center; font-size:10.5px; font-weight:800; color:var(--muted); padding:4px 0}
+.cal-week span.fri{color:var(--danger)}
+#calGrid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px}
+.cal-d{aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; border-radius:12px; font-size:13px; font-weight:700; position:relative; cursor:pointer; transition:background .15s}
+.cal-d:hover{background:var(--card2)}
+.cal-d.dim{opacity:.28}
+.cal-d.today{background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; box-shadow:0 4px 12px rgba(124,58,237,.4)}
+.cal-d.sel{outline:2px solid var(--p2); outline-offset:-2px}
+.cal-d .dots{display:flex; gap:2px; height:5px}
+.cal-d .dots i{width:5px; height:5px; border-radius:50%; background:var(--p3)}
+.cal-d.today .dots i{background:#fff}
+#dayPanel{margin-top:12px}
+.g-date-sub{font-size:11px; color:var(--muted); font-weight:600; text-align:center; margin-top:-4px; margin-bottom:10px}
+
+/* ---------- Stats ---------- */
+.stat-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px}
+.stat-card{background:var(--card); border:1.5px solid var(--line); border-radius:18px; padding:14px; box-shadow:var(--shadow); text-align:center}
+.stat-card .v{font-size:26px; font-weight:800; line-height:1.2}
+.stat-card .k{font-size:11.5px; color:var(--muted); font-weight:700; margin-top:3px}
+.panel{background:var(--card); border:1.5px solid var(--line); border-radius:var(--r); padding:16px; box-shadow:var(--shadow); margin-bottom:12px}
+.panel h3{margin:0 0 12px; font-size:14.5px; font-weight:800}
+.bar-row{display:flex; align-items:center; gap:8px; margin-bottom:9px}
+.bar-row .lbl{width:74px; font-size:12px; font-weight:700; flex:none}
+.bar-row .track{flex:1; height:12px; background:var(--card2); border-radius:999px; overflow:hidden}
+.bar-row .fill{height:100%; border-radius:999px; background:linear-gradient(90deg,var(--p1),var(--p2)); transition:width .5s ease}
+.bar-row .num{width:30px; text-align:center; font-size:11.5px; font-weight:800; color:var(--muted); flex:none}
+.donut-wrap{display:flex; align-items:center; gap:18px; justify-content:center}
+.donut{width:110px; height:110px; border-radius:50%; position:relative; flex:none}
+.donut::after{content:''; position:absolute; inset:22px; background:var(--card); border-radius:50%}
+.donut .c{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:1; font-size:12px; font-weight:800; color:var(--muted)}
+.legend{display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:700}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-inline-end:6px}
+.week-bars{display:flex; align-items:flex-end; gap:7px; height:110px; padding-top:8px}
+.wb{flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; height:100%; justify-content:flex-end}
+.wb .b{width:100%; max-width:30px; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg,var(--p2),var(--p1)); min-height:4px; transition:height .4s}
+.wb .d{font-size:10px; color:var(--muted); font-weight:700}
+.wb .v{font-size:10.5px; font-weight:800; color:var(--p1)}
+
+/* ---------- Search ---------- */
+.search-box{display:flex; align-items:center; gap:9px; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:11px 14px; box-shadow:var(--shadow); margin-bottom:12px}
+.search-box input{flex:1; border:none; background:none; outline:none; font-size:15px}
+
+/* ---------- Modal ---------- */
+.overlay{position:fixed; inset:0; z-index:80; background:rgba(23,15,40,.55); backdrop-filter:blur(6px); display:flex; align-items:flex-end; justify-content:center}
+.modal{background:var(--card); width:100%; max-width:520px; max-height:88vh; overflow-y:auto; border-radius:26px 26px 0 0; padding:18px 18px calc(20px + env(safe-area-inset-bottom)); animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(60px); opacity:.4} to{transform:none; opacity:1}}
+.modal h3{margin:0 0 14px; font-size:17px; font-weight:800; display:flex; align-items:center; gap:8px}
+.modal .x{position:absolute; top:16px; inset-inline-start:16px}
+.mrow{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.mbtns{display:flex; gap:9px; margin-top:16px}
+.btn-danger{background:rgba(239,68,68,.1); color:var(--danger); border:1.5px solid rgba(239,68,68,.35)}
+.switch-row{display:flex; align-items:center; justify-content:space-between; padding:11px 2px; border-bottom:1px solid var(--line); font-size:14px; font-weight:700}
+.switch{position:relative; width:46px; height:26px; border-radius:999px; background:var(--line); transition:background .2s; flex:none}
+.switch::after{content:''; position:absolute; top:3px; inset-inline-start:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:all .2s; box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.switch.on{background:var(--ok)}
+.switch.on::after{transform:translateX(-20px)}
+.help-box{background:var(--card2); border:1.5px dashed var(--line); border-radius:14px; padding:12px; font-size:12.5px; line-height:2.1; color:var(--muted)}
+.help-box b{color:var(--text)}
+.help-box .ex{color:var(--p1); font-weight:700}
+
+/* toast + banner */
+#toast{position:fixed; bottom:110px; inset-inline:0; display:flex; justify-content:center; z-index:95; pointer-events:none}
+#toast .t{background:#1E1B2E; color:#fff; padding:11px 20px; border-radius:999px; font-size:13px; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,.35); animation:pop .2s ease; max-width:86%; text-align:center}
+[data-theme="dark"] #toast .t{background:#F3F0FA; color:#1E1B2E}
+#notifBanner{position:fixed; top:0; inset-inline:0; z-index:60; display:none; justify-content:center; padding:10px}
+#notifBanner.show{display:flex}
+#notifBanner .b{background:#1E1B2E; color:#fff; border-radius:16px; padding:11px 15px; font-size:12.5px; font-weight:700; display:flex; gap:10px; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#notifBanner button{background:var(--p3); color:#fff; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:800}
+
+.celebrate{position:fixed; inset:0; z-index:96; pointer-events:none; overflow:hidden}
+.celebrate span{position:absolute; font-size:22px; animation:fall 1.4s ease-in forwards}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0); opacity:1} 100%{transform:translateY(70vh) rotate(340deg); opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- ===== صفحه ورود ===== -->
+<div id="authScreen">
+  <div class="blob" style="width:280px;height:280px;background:#FDE047;top:-60px;right:-60px"></div>
+  <div class="blob" style="width:240px;height:240px;background:#22D3EE;bottom:8%;left:-70px"></div>
+  <div class="logo-big">⏰</div>
+  <div class="auth-title">یادیار</div>
+  <div class="auth-sub">دستیار هوشمند کارها — صوتی و نوشتاری 🎯</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button id="authTabLogin" class="on">ورود</button>
+      <button id="authTabSignup">ثبت‌نام</button>
+    </div>
+    <div id="authError" class="auth-err hidden"></div>
+    <div class="field" id="authNameField">
+      <label>نام شما (برای صمیمی‌تر شدن گفتگو 😊)</label>
+      <input id="authName" type="text" placeholder="مثلاً سارا">
+    </div>
+    <div class="field">
+      <label>ایمیل</label>
+      <input id="authEmail" type="email" placeholder="you@example.com" dir="ltr" style="text-align:left">
+    </div>
+    <div class="field">
+      <label>رمز عبور</label>
+      <input id="authPass" type="password" placeholder="حداقل ۴ کاراکتر">
+    </div>
+    <button id="authSubmit" class="btn-main grad">ورود به یادیار</button>
+    <button id="authGuest" class="auth-guest">فعلاً بدون ثبت‌نام امتحان می‌کنم 👀</button>
+    <div class="auth-note">🔐 اطلاعات شما فقط روی همین گوشی ذخیره می‌شه و رمز عبور به‌صورت رمزنگاری‌شده نگه داشته می‌شه. برای انتقال به گوشی دیگر از «پشتیبان‌گیری» در تنظیمات استفاده کنید.</div>
+  </div>
+</div>
+
+<!-- ===== اپ اصلی ===== -->
+<div id="app" class="hidden">
+  <header class="app-hdr">
+    <div class="hdr-row">
+      <div class="hdr-greet">
+        <div class="h1" id="hdrGreet">سلام 👋</div>
+        <div class="h2" id="hdrDate">—</div>
+      </div>
+      <button class="hdr-btn badge hidden" id="btnNotif" title="فعال‌سازی نوتیفیکیشن">🔔</button>
+      <button class="hdr-btn hidden" id="btnInstall" title="نصب اپ">📲</button>
+      <button class="hdr-btn" id="btnSettings" title="تنظیمات">⚙️</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- چت -->
+    <section id="view-chat" class="view active">
+      <div id="upcomingStrip"></div>
+      <div id="chatLog"></div>
+      <div class="chips-suggest" id="chipsRow">
+        <button class="chip">فردا ساعت ۸ صبح جلسه با تیم دارم</button>
+        <button class="chip">هر روز ساعت ۱۰ شب قرص یادم بنداز</button>
+        <button class="chip">جمعه خرید هفتگی</button>
+        <button class="chip">چه کارایی امروز دارم؟</button>
+      </div>
+      <div class="chat-bar">
+        <button class="icon-btn rec" id="btnRec" title="ضبط صوت برای تبدیل به متن">⏺️</button>
+        <button class="icon-btn mic" id="btnMic" title="گفتار زنده">🎙️</button>
+        <textarea id="chatInput" rows="1" placeholder="کارتو بنویس یا بگو… مثلاً: فردا ساعت ۵ عصر به مامان زنگ بزن"></textarea>
+        <button class="icon-btn send" id="btnSend" title="ارسال">➤</button>
+      </div>
+    </section>
+
+    <!-- کارها -->
+    <section id="view-tasks" class="view">
+      <div class="filters" id="taskFilters">
+        <button class="chip on" data-f="all">همه</button>
+        <button class="chip" data-f="today">امروز</button>
+        <button class="chip" data-f="tomorrow">فردا</button>
+        <button class="chip" data-f="week">این هفته</button>
+        <button class="chip" data-f="over">سررسیده</button>
+        <button class="chip" data-f="done">انجام‌شده</button>
+      </div>
+      <div id="tasksList"></div>
+    </section>
+
+    <!-- تقویم -->
+    <section id="view-calendar" class="view">
+      <div class="cal-card">
+        <div class="cal-head">
+          <button id="calPrev">‹</button>
+          <div>
+            <div class="cm" id="calTitle">—</div>
+            <div class="g-date-sub" id="calSub">—</div>
+          </div>
+          <button id="calNext">›</button>
+        </div>
+        <div class="cal-week">
+          <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span class="fri">ج</span>
+        </div>
+        <div id="calGrid"></div>
+      </div>
+      <div id="dayPanel"></div>
+    </section>
+
+    <!-- جستجو -->
+    <section id="view-search" class="view">
+      <div class="search-box">
+        <span>🔍</span>
+        <input id="searchInput" placeholder="جستجو در کارها… (عنوان یا دسته)">
+      </div>
+      <div id="searchResults"></div>
+    </section>
+
+    <!-- آمار -->
+    <section id="view-stats" class="view">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="v" id="stTotal">۰</div><div class="k">کل کارها</div></div>
+        <div class="stat-card"><div class="v" id="stDone">۰</div><div class="k">انجام‌شده ✅</div></div>
+        <div class="stat-card"><div class="v grad-txt" id="stRate">۰٪</div><div class="k">نرخ تکمیل</div></div>
+        <div class="stat-card"><div class="v" id="stStreak">۰ 🔥</div><div class="k">روزهای پیاپی</div></div>
+      </div>
+      <div class="panel">
+        <h3>📂 کارها به تفکیک دسته</h3>
+        <div id="catBars"></div>
+      </div>
+      <div class="panel">
+        <h3>⚡ توزیع اولویت</h3>
+        <div class="donut-wrap">
+          <div class="donut" id="prioDonut"><div class="c" id="prioCenter">—</div></div>
+          <div class="legend" id="prioLegend"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>📈 کارهای انجام‌شده در ۷ روز اخیر</h3>
+        <div class="week-bars" id="weekBars"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom"><div class="nav-in">
+    <button data-view="chat" class="on"><span class="ic">💬</span>چت</button>
+    <button data-view="tasks"><span class="ic">✅</span>کارها</button>
+    <button data-view="calendar"><span class="ic">📅</span>تقویم</button>
+    <button data-view="search"><span class="ic">🔍</span>جستجو</button>
+    <button data-view="stats"><span class="ic">📊</span>آمار</button>
+  </div></nav>
+</div>
+
+<!-- ===== نوار میکروفن زنده ===== -->
+<div id="micOverlay" class="hidden">
+  <div class="mic-ring">🎙️</div>
+  <div id="micText">دارم گوش می‌دم…</div>
+  <div class="mic-hint">حرفت رو رها کن تا خودش ارسال بشه • مثلاً «فردا ساعت ۹ صبح دکتر داند، یادم بنداز»</div>
+  <button class="mic-stop" id="micStop">⏹ تموم</button>
+</div>
+
+<!-- ===== مودال ویرایش کار ===== -->
+<div id="editOverlay" class="overlay hidden">
+  <div class="modal" style="position:relative">
+    <h3 id="editTitle">✏️ ویرایش کار</h3>
+    <div class="field"><label>عنوان</label><input id="fTitle" type="text"></div>
+    <div class="field"><label>موعد (تاریخ و ساعت)</label><input id="fDue" type="datetime-local"></div>
+    <div class="mrow">
+      <div class="field"><label>دسته</label><select id="fCat"></select></div>
+      <div class="field"><label>اولویت</label><select id="fPrio">
+        <option value="high">🔴 فوری</option>
+        <option value="med">🟡 معمولی</option>
+        <option value="low">🟢 فرصت‌شد</option>
+      </select></div>
+    </div>
+    <div class="mrow">
+      <div class="field"><label>تکرار</label><select id="fRepeat">
+        <option value="none">بدون تکرار</option>
+        <option value="daily">هر روز</option>
+        <option value="weekly">هر هفته</option>
+        <option value="monthly">هر ماه</option>
+      </select></div>
+      <div class="field"><label>یادآوری</label><select id="fRemind">
+        <option value="0">در زمان خودش</option>
+        <option value="5">۵ دقیقه قبل</option>
+        <option value="15">۱۵ دقیقه قبل</option>
+        <option value="30">نیم ساعت قبل</option>
+        <option value="60">۱ ساعت قبل</option>
+        <option value="1440">یک روز قبل</option>
+      </select></div>
+    </div>
+    <div class="mbtns">
+      <button class="btn-sm btn-ok" id="btnSaveTask">ذخیره ✔</button>
+      <button class="btn-sm btn-danger" id="btnDeleteTask">حذف 🗑</button>
+      <button class="btn-sm btn-ghost" id="btnCloseEdit">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== مودال تنظیمات ===== -->
+<div id="setOverlay" class="overlay hidden">
+  <div class="modal" style="position:relative">
+    <h3>⚙️ تنظیمات و راهنما</h3>
+    <div class="field"><label>نام شما</label><input id="setName" type="text"></div>
+    <div class="switch-row">🔔 نوتیفیکیشن سیستم <button class="btn-sm" id="btnNotifPerm" style="max-width:170px;border:1.5px solid var(--line);border-radius:12px">فعال‌سازی</button></div>
+    <div class="switch-row">🔊 صدای یادآوری <button class="switch on" id="swSound"></button></div>
+    <div class="switch-row">🌙 حالت شب <button class="switch" id="swDark"></button></div>
+    <div class="field" style="margin-top:12px"><label>آدرس سرویس تبدیل ضبط‌صوت به متن — اختیاری (روش دوم صوت)؛ پاسخ باید JSON با کلید text یا متن ساده باشه</label>
+      <input id="setAsrUrl" type="url" dir="ltr" style="text-align:left" placeholder="https://my-server.example/transcribe"></div>
+    <div class="field"><label>هدر احراز هویت اختیاری (مثلاً Authorization: Bearer xxx)</label>
+      <input id="setAsrAuth" type="text" dir="ltr" style="text-align:left" placeholder="Authorization: Bearer sk-..."></div>
+    <div class="mbtns" style="margin-top:6px">
+      <button class="btn-sm btn-ghost" id="btnExport">💾 پشتیبان‌گیری</button>
+      <button class="btn-sm btn-ghost" id="btnImport">📥 بازیابی</button>
+    </div>
+    <div class="mbtns">
+      <button class="btn-sm btn-ghost" id="btnLogout">🚪 خروج</button>
+      <button class="btn-sm btn-danger" id="btnClearAll">🧹 پاک‌کردن همه کارها</button>
+    </div>
+    <input id="importFile" type="file" accept=".json,application/json" class="hidden">
+    <div class="help-box" id="installGuide" style="margin-top:14px"></div>
+    <div class="help-box" style="margin-top:14px">
+      <b>💬 چطور با یادیار حرف بزنم؟</b><br>
+      زمان: <span class="ex">فردا ساعت ۵ عصر • نیم ساعت دیگه • شنبه ساعت ۱۰ صبح • ۲۵ آبان • امشب ساعت ۹</span><br>
+      تکرار: <span class="ex">هر روز • هر هفته • هر شنبه • هر ماه</span><br>
+      اولویت: <span class="ex">فوری • مهم • اگه شد</span><br>
+      یادآوری قبل: <span class="ex">نیم ساعت قبل یادم بنداز</span><br>
+      پرسش: <span class="ex">چه کارایی امروز دارم؟ کارای فردا؟</span><br>
+      انجام/حذف: <span class="ex">جلسه با تیم تموم شد • حذف خرید</span>
+    </div>
+    <div class="auth-note">نسخه ۱٫۰ • همه‌چیز آفلاین و روی گوشی خودت 🔒</div>
+    <div class="mbtns"><button class="btn-sm btn-ok" id="btnCloseSet">باشه، بسته شه</button></div>
+  </div>
+</div>
+
+<div id="notifBanner"><div class="b"><span>🔔 برای یادآوری روی قفل‌صفحه، اجازه نوتیفیکیشن لازمه</span><button id="btnEnableNotif">فعال کن</button></div></div>
+<div id="toast"></div>
+
+<script>
+/* ================= ابزارهای پایه ================= */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+const toFa = s => String(s).replace(/\d/g, d => FA_DIGITS[+d]);
+const pad2 = n => String(n).padStart(2, '0');
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+const LS = {
+  get(k, def){ try{ const v = localStorage.getItem(k); return v === null ? def : JSON.parse(v); }catch(e){ return def; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+/* ================= تقویم جلالی ================= */
+function gregorianToJalali(gy, gm, gd){
+  const gdm = [0,31,59,90,120,151,181,212,243,273,304,334];
+  const gy2 = gm > 2 ? gy + 1 : gy;
+  let days = 355666 + 365*gy + Math.floor((gy2+3)/4) - Math.floor((gy2+99)/100) + Math.floor((gy2+399)/400) + gd + gdm[gm-1];
+  let jy = -1595 + 33*Math.floor(days/12053);
+  days %= 12053;
+  jy += 4*Math.floor(days/1461);
+  days %= 1461;
+  if(days > 365){ jy += Math.floor((days-1)/365); days = (days-1) % 365; }
+  let jm, jd;
+  if(days < 186){ jm = 1 + Math.floor(days/31); jd = 1 + (days % 31); }
+  else { jm = 7 + Math.floor((days-186)/30); jd = 1 + ((days-186) % 30); }
+  return [jy, jm, jd];
+}
+function jalaliToGregorian(jy, jm, jd){
+  jy += 1595;
+  let days = -355668 + 365*jy + Math.floor(jy/33)*8 + Math.floor((jy%33+3)/4) + jd + (jm < 7 ? (jm-1)*31 : (jm-7)*30 + 186);
+  let gy = 400*Math.floor(days/146097);
+  days %= 146097;
+  if(days > 36524){ gy += 100*Math.floor(--days/36524); days %= 36524; if(days >= 365) days++; }
+  gy += 4*Math.floor(days/1461);
+  days %= 1461;
+  if(days > 365){ gy += Math.floor((days-1)/365); days = (days-1) % 365; }
+  let gd = days + 1;
+  const ml = [0,31,((gy%4===0 && gy%100!==0) || gy%400===0) ? 29 : 28,31,30,31,30,31,31,30,31,30,31];
+  let gm = 0;
+  while(gm < 13 && gd > ml[gm]){ gd -= ml[gm]; gm++; }
+  return [gy, gm, gd];
+}
+function isJalaliLeap(jy){ return [1,5,9,13,17,22,26,30].includes(jy % 33); }
+function jalaliMonthLen(jy, jm){ return jm <= 6 ? 31 : (jm <= 11 ? 30 : (isJalaliLeap(jy) ? 30 : 29)); }
+
+const J_MONTHS = ['','فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const DOW_FA = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه']; // index = Date.getDay()
+
+/* تاریخ شمسی خوانا: «پنجشنبه ۲۴ آبان ۱۴۰۵» */
+function fmtJalali(d){
+  const [jy, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  return `${DOW_FA[d.getDay()]} ${toFa(jd)} ${J_MONTHS[jm]} ${toFa(jy)}`;
+}
+/* کلید محلی تاریخ: YYYY-MM-DD */
+function dateKey(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function dateKeyOfDue(s){ return String(s).slice(0, 10); }
+/* مقدار برای input[type=datetime-local] به وقت محلی */
+function toLocalInput(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function sameLocalDay(a, b){ return dateKey(a) === dateKey(b); }
+
+/* ================= ذخیره‌سازی و حساب کاربری ================= */
+const Users = {
+  all(){ return LS.get('yadyar_users', {}); },
+  save(u){ LS.set('yadyar_users', u); },
+  async hash(pass, salt){
+    const data = salt + '::' + pass;
+    if(window.crypto && crypto.subtle){
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+    /* جایگزین ساده برای محیط‌های بدون crypto.subtle */
+    let h = 5381;
+    for(const ch of data){ h = ((h << 5) + h + ch.charCodeAt(0)) >>> 0; }
+    return 'djb2_' + h.toString(16);
+  }
+};
+
+async function signupUser(name, email, pass){
+  const users = Users.all();
+  if(users[email]) throw new Error('این ایمیل قبلاً ثبت شده؛ وارد شو یا ایمیل دیگه بزن.');
+  const salt = uid();
+  users[email] = { name, salt, hash: await Users.hash(pass, salt), created: new Date().toISOString() };
+  Users.save(users);
+  return { email, name };
+}
+async function loginUser(email, pass){
+  const users = Users.all();
+  const u = users[email];
+  if(!u) throw new Error('ایمیل پیدا نشد؛ اول ثبت‌نام کن 🙂');
+  const h = await Users.hash(pass, u.salt);
+  if(h !== u.hash) throw new Error('رمز عبور درست نیست 🤔');
+  return { email, name: u.name };
+}
+
+/* ================= صدا ================= */
+let audioCtx = null;
+function beep(kind){
+  const st = state.settings || {};
+  if(st.sound === false) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime;
+    const notes = kind === 'alarm' ? [[880,0],[660,.18],[880,.36]] : [[660,0]];
+    for(const [f, dt] of notes){
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.001, t + dt);
+      g.gain.exponentialRampToValueAtTime(.22, t + dt + .03);
+      g.gain.exponentialRampToValueAtTime(.001, t + dt + .22);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t + dt); o.stop(t + dt + .25);
+    }
+  }catch(e){}
+}
+
+/* ================= توست و جشن ================= */
+let toastTimer = null;
+function toast(msg){
+  const el = $('#toast');
+  el.innerHTML = `<div class="t">${esc(msg)}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.innerHTML = ''; }, 3500);
+}
+function celebrate(){
+  const box = document.createElement('div');
+  box.className = 'celebrate';
+  const ems = ['🎉','✨','🎈','⭐','👏'];
+  for(let i = 0; i < 14; i++){
+    const s = document.createElement('span');
+    s.textContent = ems[i % ems.length];
+    s.style.insetInlineStart = Math.random() * 92 + '%';
+    s.style.top = (Math.random() * 20) + '%';
+    s.style.animationDelay = (Math.random() * .4) + 's';
+    box.appendChild(s);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 2000);
+}
+/* ================= موتور هوشمند فارسی (قابل تست بدون مرورگر) ================= */
+
+/* یکسان‌سازی متن: ارقام فارسی/عربی → لاتین، اعراب حذف، نیم‌فاصله حذف، همزه‌ها ساده */
+function normalizeFa(s){
+  return String(s || '')
+    .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/\u200c/g, '')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const WEEKDAYS = [
+  { re: 'پنجشنبه', dow: 4 }, { re: 'چهارشنبه', dow: 3 }, { re: 'سهشنبه', dow: 2 },
+  { re: 'دوشنبه', dow: 1 }, { re: 'یکشنبه', dow: 0 }, { re: 'جمعه', dow: 5 }, { re: 'شنبه', dow: 6 }
+];
+const J_MONTHS_RE = 'فروردین|اردیبهشت|خرداد|تیر|مرداد|شهریور|مهر|ابان|اذر|دی|بهمن|اسفند';
+const J_MONTH_IDX = { 'فروردین':1,'اردیبهشت':2,'خرداد':3,'تیر':4,'مرداد':5,'شهریور':6,'مهر':7,'ابان':8,'اذر':9,'دی':10,'بهمن':11,'اسفند':12 };
+
+const HIGH_WORDS = /فوری|اضطراری|حیاتی|مهم|سریع/;
+const LOW_WORDS = /اگه شد|اگر شد|فرصت شد|فرصت داشتی|وقت شد|اهمیت اول/;
+
+const CAT_KEYWORDS = [
+  ['کار', ['جلسه','ایمیل','گزارش','اداره','شرکت','پروژه','ددلاین','دیرلاین','مهلت','کارفرما','مدیر','مشتری','مصاحبه','معاون','همکار','قرارداد','فاکتور','فکتور','پیادهسازی','اسکرام','کارمند']],
+  ['ارتباط', ['زنگ','تماس','پیام بده','ملاقات','دیدار','دعوت','مهمونی','مهمانی']],
+  ['خرید', ['خرید','بخر','سوپرمارکت','فروشگاه','بازار','قهوه','نان','میوه','سبزی','هدیه','گوشی','لوازم']],
+  ['مالی', ['قبض','پرداخت','صورتحساب','قسط','بانک','واریز','حقوق','کارمزد','عوارض','مالیات','بهره']],
+  ['سلامت', ['ورزش','دویدن','باشگاه','دکتر','پزشک','دارو','قرص','یوگا','پیاده','دندان','چکاپ','ویزیت','آزمایش','نرمش','کشش','آب بخور']],
+  ['تحصیل', ['درس','مطالعه','امتحان','کلاس','تمرین','دانشگاه','کنکور','مشق','جزوه','پایاننامه','فلش','تدریس','کتاب']],
+  ['خانه', ['جارو','نظافت','شستن','لباسشویی','ظرف','اشپزی','غذا','غبارروبی','مرتب','خشک','اتاق','چمن','تغییر ملزومات']],
+  ['سفر', ['پرواز','رزرو','سفر','بلیط','هتل','چمدان','ویزا','گذرنامه']]
+];
+function detectCategory(t){
+  for(const [cat, words] of CAT_KEYWORDS){
+    for(const w of words){ if(t.includes(w)) return cat; }
+  }
+  return 'شخصی';
+}
+
+/* مدیریت بازه‌های متن که به‌عنوان زمان/تکرار/اولویت شناسایی شدن (از عنوان حذف می‌شن) */
+function makeClaimer(){
+  const ranges = [];
+  return {
+    ranges,
+    ok(m){ const s = m.index, e = m.index + m[0].length; for(const r of ranges){ if(s < r.end && r.start < e) return false; } ranges.push({start:s, end:e}); return true; }
+  };
+}
+
+/* اولین روز هفته آینده با شماره dow داده‌شده (0=یکشنبه … 6=شنبه) */
+function findNextWeekday(now, dow, preferToday){
+  let diff = (dow - now.getDay() + 7) % 7;
+  if(diff === 0 && !preferToday) diff = 7;
+  return addDays(now, diff);
+}
+
+/* موعد بعدی برای کار تکرارشونده */
+function nextOccurrence(due, repeat, repeatWd){
+  let d = new Date(due);
+  if(repeat === 'daily') return addDays(d, 1);
+  if(repeat === 'weekly'){
+    if(repeatWd !== null && repeatWd !== undefined){
+      do { d = addDays(d, 1); } while(d.getDay() !== repeatWd);
+      return d;
+    }
+    return addDays(d, 7);
+  }
+  if(repeat === 'monthly'){
+    const day = d.getDate();
+    d.setMonth(d.getMonth() + 1);
+    if(d.getDate() < day) d.setDate(0);
+    return d;
+  }
+  return null;
+}
+
+const REMINDER_ON = /یادم بنداز|یاداوری کن|یاداوری|یادداری|فراموش نشه/;
+
+/* ---------- تشخیص قصد کاربر ---------- */
+function detectIntent(raw){
+  const t = normalizeFa(raw);
+  if(/^(سلام|سلام سلام|درود|هی|های|صبح بخیر|ظهر بخیر|عصر بخیر|شب بخیر|خسته نباشید|چطوری|خوبی|مرسی|ممنون|دستت درد نکنه|مچکریم|خدا قوت|لطفا)[\s!؟.]*$/.test(t)) return { type: 'chat', text: t };
+  if(/چی میتونی|راهنما|کمکم کن|چطور/.test(t)) return { type: 'help' };
+  if(/^(حذف|پاک)\s|\sحذف کن|حذفش کن|پاکش کن|از لیست بردار/.test(t)) return { type: 'delete', text: t };
+  if(/تموم شد|تمام شد|انجام شد|پایان یافت|تمومش کردم|انجامش دادم|انجامش کردم|خوردم|رسوندم|رسیدم/.test(t)) return { type: 'complete', text: t };
+  const scope =
+    /سررسیده|عقب افتاده/.test(t) ? 'over' :
+    /امروز/.test(t) ? 'today' :
+    /فردا/.test(t) ? 'tomorrow' :
+    /این هفته|هفته جاری/.test(t) ? 'week' : 'all';
+  if(/چی کارایی|چه کارایی|چه کارهایی|چی داری|چی دارم|کارام چیه|کارهام|کارهامو|کارهای|لیست کار|برنامه امروز|برنامه فردا|چی باید|چیکار|چه برنامه/.test(t))
+    return { type: 'query', scope, text: t };
+  return { type: 'add', text: t };
+}
+
+/* یافتن نزدیک‌ترین کار با متن آزاد */
+function fuzzyFindTask(tasks, text){
+  const t = normalizeFa(text);
+  const words = t.split(' ').filter(w => w.length >= 2);
+  let best = null, bestScore = 0;
+  for(const task of tasks){
+    const title = normalizeFa(task.title);
+    let score = 0;
+    for(const w of words){ if(title.includes(w) || w.includes(title)) score += 2; }
+    if(title && t.includes(title)) score += 4;
+    if(score > bestScore){ bestScore = score; best = task; }
+  }
+  return bestScore > 0 ? best : null;
+}
+
+/* ---------- پارسر اصلی: متن فارسی → ساختار کار ---------- */
+function parseTask(raw, now){
+  now = now || new Date();
+  const t = normalizeFa(raw);
+  const claim = makeClaimer();
+  const res = {
+    title: '', due: null, hasTime: false, cat: 'شخصی', prio: 'med',
+    repeat: 'none', repeatWd: null, remindBefore: 0, reminderOn: false, matched: false
+  };
+
+  /* اولویت */
+  let m = HIGH_WORDS.exec(t);
+  if(m && claim.ok(m)){ res.prio = 'high'; }
+  m = LOW_WORDS.exec(t);
+  if(m && claim.ok(m) && res.prio === 'med'){ res.prio = 'low'; }
+
+  /* یادآوری قبل از موعد */
+  m = /نیم\s*ساعت\s*قبل|یک\s*روز\s*قبل|یه\s*روز\s*قبل|یک\s*ساعت\s*قبل|یه\s*ساعت\s*قبل|(\d+)\s*(دقیقه|ساعت|روز)\s*قبل/.exec(t);
+  if(m && claim.ok(m)){
+    if(/نیم ساعت/.test(m[0])) res.remindBefore = 30;
+    else if(/روز/.test(m[0])) res.remindBefore = 1440;
+    else if(/ساعت/.test(m[0])) res.remindBefore = 60;
+    else res.remindBefore = parseInt(m[1], 10);
+  }
+  m = REMINDER_ON.exec(t);
+  if(m && claim.ok(m)){ res.reminderOn = true; }
+
+  /* تکرار */
+  m = /هر\s*(روز|روزها|شب|صبح)|روزی\s*یکبار|همه\s*روزها?/.exec(t);
+  if(m && claim.ok(m)){ res.repeat = 'daily'; }
+  m = /هر\s*هفته/.exec(t);
+  if(m && claim.ok(m)){ res.repeat = 'weekly'; }
+  m = /هر\s*ماه/.exec(t);
+  if(m && claim.ok(m)){ res.repeat = 'monthly'; }
+  for(const wd of WEEKDAYS){
+    m = new RegExp('هر\\s*' + wd.re).exec(t);
+    if(m && claim.ok(m)){ res.repeat = res.repeat === 'none' ? 'weekly' : res.repeat; res.repeatWd = wd.dow; break; }
+  }
+
+  /* روز */
+  let dayDate = null;
+  let fromRelative = false; /* موعد از «نیم ساعت دیگه» و امثالش آمده، نه از اسم روز */
+  /* تکرار با روز هفته: «هر شنبه» → موعد اولین شنبه پیش رو */
+  for(const wd of WEEKDAYS){
+    m = new RegExp('هر\\s*' + wd.re).exec(t);
+    if(m && claim.ok(m)){
+      res.repeat = res.repeat === 'none' ? 'weekly' : res.repeat;
+      res.repeatWd = wd.dow;
+      if(dayDate === null) dayDate = findNextWeekday(now, wd.dow, true);
+      break;
+    }
+  }
+  if(/امشب/.test(t)){ m = /امشب/.exec(t); if(claim.ok(m)){ dayDate = dayDate || new Date(now); res.hasTime = true; } }
+  if(dayDate === null && /پس\s*فردا|پسفردا/.test(t)){ m = /پس\s*فردا|پسفردا/.exec(t); if(claim.ok(m)) dayDate = addDays(now, 2); }
+  if(dayDate === null && /فردا/.test(t)){ m = /فردا/.exec(t); if(claim.ok(m)) dayDate = addDays(now, 1); }
+  if(dayDate === null && /امروز/.test(t)){ m = /امروز/.exec(t); if(claim.ok(m)) dayDate = new Date(now); }
+  if(dayDate === null){
+    m = /(\d{1,2})\s*روز\s*(دیگه|دیگر|بعد)/.exec(t);
+    if(m && claim.ok(m)) dayDate = addDays(now, parseInt(m[1], 10));
+  }
+  /* مدت نسبی: «نیم ساعت دیگه» ، «۲۰ دقیقه بعد» ، «بعد ۳ ساعت» */
+  if(dayDate === null){
+    m = /نیم\s*ساعت\s*(دیگه|دیگر|بعد)/.exec(t);
+    if(m && claim.ok(m)){ dayDate = new Date(now.getTime() + 30 * 60000); res.hasTime = true; fromRelative = true; }
+  }
+  if(dayDate === null){
+    m = /(\d+)\s*(دقیقه|ساعت)ای?\s*(دیگه|دیگر|بعد)/.exec(t);
+    if(m && claim.ok(m)){ dayDate = new Date(now.getTime() + parseInt(m[1], 10) * (m[2] === 'ساعت' ? 3600000 : 60000)); res.hasTime = true; fromRelative = true; }
+  }
+  if(dayDate === null){
+    m = /بعد\s*(?:از)?\s*(\d+)\s*(دقیقه|ساعت)/.exec(t);
+    if(m && claim.ok(m)){ dayDate = new Date(now.getTime() + parseInt(m[1], 10) * (m[2] === 'ساعت' ? 3600000 : 60000)); res.hasTime = true; fromRelative = true; }
+  }
+  if(dayDate === null){
+    m = /(هفته|ماه)\s*(دیگه|دیگر|بعد|اینده|آینده)/.exec(t);
+    if(m && claim.ok(m)){
+      if(m[1] === 'ماه'){ const d2 = new Date(now); const dd = d2.getDate(); d2.setMonth(d2.getMonth() + 1); if(d2.getDate() < dd) d2.setDate(0); dayDate = d2; }
+      else dayDate = addDays(now, 7);
+    }
+  }
+  if(dayDate === null){
+    for(const wd of WEEKDAYS){
+      m = new RegExp(wd.re).exec(t);
+      if(m && claim.ok(m)){
+        const hasHourSoon = /ساعت\s*\d|صبح|ظهر|عصر|شب|بعدازظهر/.test(t);
+        if(res.repeat === 'weekly' && res.repeatWd === null) res.repeatWd = wd.dow;
+        dayDate = findNextWeekday(now, wd.dow, true);
+        if(wd.dow === now.getDay() && hasHourSoon){
+          const h = parseExplicitHour(t);
+          if(h && h.d){ const cand = new Date(now); cand.setHours(h.h, h.min, 0, 0); if(cand <= now) dayDate = addDays(now, 7); }
+        }
+        break;
+      }
+    }
+  }
+  if(dayDate === null){
+    m = new RegExp('(\\d{1,2})\\s*(' + J_MONTHS_RE + ')').exec(t) || new RegExp('(' + J_MONTHS_RE + ')\\s*(?:ماه)?\\s*(\\d{1,2})').exec(t);
+    if(m && claim.ok(m)){
+      const jd = parseInt(m[1], 10) || parseInt(m[2], 10);
+      const jmName = (m[2] || m[1]).replace(/آ/g, 'ا');
+      const jm = J_MONTH_IDX[jmName];
+      if(jm){
+        const nowJ = gregorianToJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+        let g = jalaliToGregorian(nowJ[0], jm, jd);
+        let cand = new Date(g[0], g[1] - 1, g[2]);
+        const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if(cand < startToday){ g = jalaliToGregorian(nowJ[0] + 1, jm, jd); cand = new Date(g[0], g[1] - 1, g[2]); }
+        dayDate = cand;
+      }
+    }
+  }
+  if(dayDate === null){
+    m = /(\d{4})-(\d{1,2})-(\d{1,2})/.exec(t);
+    if(m && claim.ok(m)){ dayDate = new Date(+m[1], +m[2] - 1, +m[3]); }
+  }
+
+  /* ساعت */
+  function parseExplicitHour(str){
+    let hm = /ساعت\s*(\d{1,2})(?::(\d{1,2}))?(\s*و\s*نیم)?/.exec(str) ||
+             /(\d{1,2}):(\d{2})/.exec(str) ||
+             /(\d{1,2})\s*(صبح|بعدازظهر|بعد از ظهر|ظهر|عصر|شب)/.exec(str);
+    if(!hm) return null;
+    const h = parseInt(hm[1], 10);
+    if(isNaN(h) || h < 0 || h > 24) return null;
+    let min = 0;
+    if(hm[0].indexOf(':') >= 0 && hm[2]) min = parseInt(hm[2], 10);
+    else if(/و\s*نیم|نیم/.test(hm[0])) min = 30;
+    if(isNaN(min) || min > 59) return null;
+    return { h, min, d: hm };
+  }
+  const hourInfo = parseExplicitHour(t);
+  const partWord =
+    /امشب/.test(t) ? 'شب' :
+    (/بعدازظهر|بعد از ظهر/.exec(t) || [])[0] ? 'بعدازظهر' :
+    (/صبح/.exec(t) || [])[0] ? 'صبح' :
+    (/(^|[^ا-ی])ظهر/.exec(t) || [])[0] ? 'ظهر' :
+    (/عصر/.exec(t) || [])[0] ? 'عصر' :
+    (/شب/.exec(t) || [])[0] ? 'شب' : null;
+  if(hourInfo && claim.ok(hourInfo.d)){
+    let h = hourInfo.h, min = hourInfo.min;
+    if(partWord === 'صبح'){ if(h === 12) h = 0; }
+    else if(partWord === 'ظهر' || partWord === 'بعدازظهر'){ if(h < 12) h += 12; }
+    else if(partWord === 'عصر' || partWord === 'شب'){ if(h < 12) h += 12; if(h === 24) h = 0; }
+    else { if(h >= 1 && h <= 7) h += 12; }
+    if(h > 23) h = 23;
+    if(!dayDate) dayDate = new Date(now);
+    dayDate = new Date(dayDate);
+    dayDate.setHours(h, min, 0, 0);
+    res.hasTime = true;
+    if(!/امروز|امشب|فردا|پس|هفته|ماه|روز|شنبه|یکشنبه|دوشنبه|سهشنبه|چهارشنبه|پنجشنبه|جمعه|ابان|اذر|فروردین|اردیبهشت|خرداد|تیر|مرداد|شهریور|مهر|دی|بهمن|اسفند|\d{4}-/.test(t) && dayDate <= now){
+      dayDate = addDays(dayDate, 1); // فقط ساعت گفته شده و گذشته → فردا
+    }
+  } else if(partWord && (dayDate || /امشب|امروز/.test(t))){
+    const defaults = { 'صبح': 9, 'ظهر': 12, 'بعدازظهر': 16, 'عصر': 17, 'شب': 20 };
+    if(!dayDate) dayDate = new Date(now);
+    dayDate = new Date(dayDate);
+    dayDate.setHours(defaults[partWord], partWord === 'ظهر' ? 30 : 0, 0, 0);
+    res.hasTime = true;
+  } else if(dayDate && !fromRelative){
+    dayDate = new Date(dayDate);
+    dayDate.setHours(9, 0, 0, 0);
+    res.hasTime = false;
+  }
+
+  /* فوری بودن بدون ساعت → همین حالا تقریبا */
+  if(!res.hasTime && /الان|همین حالا|بلافاصله/.test(t)){
+    m = /الان|همین حالا|بلافاصله/.exec(t);
+    if(claim.ok(m)){ dayDate = new Date(now.getTime() + 5 * 60000); res.hasTime = true; }
+  }
+
+  /* تکرار بدون روز مشخص: «هر روز آب بخور» → سیکل بعدی ساعت ۹ صبح */
+  if(res.repeat !== 'none' && !dayDate){
+    const base = new Date(now); base.setHours(9, 0, 0, 0);
+    dayDate = nextOccurrence(base, res.repeat, res.repeatWd) || addDays(now, 1);
+    res.hasTime = false;
+  }
+
+  /* تکرار روزانه/هفتگی که ساعتش گذشته → سیکل بعد */
+  if(res.repeat !== 'none' && dayDate && dayDate <= now && (res.hasTime || sameLocalDay(dayDate, now) === false)){
+    const nxt = nextOccurrence(dayDate, res.repeat, res.repeatWd);
+    if(nxt) dayDate = nxt;
+  }
+
+  res.due = dayDate;
+  if(dayDate) res.matched = true;
+  res.cat = detectCategory(t);
+
+  /* عنوان: حذف عبارات زمانی شناسایی‌شده و کلمات دستوری */
+  let s = t.split('');
+  for(const r of claim.ranges) for(let i = r.start; i < r.end; i++) s[i] = ' ';
+  s = s.join('');
+  s = s.replace(/یادم بنداز|یاداوری کن|یاداوری|یادداری|فراموش نشه|لطفا|خواهشا|بذار|بگو|میخوام|قراره|باید|حتما|فقط|درست|علاوه بر این/g, ' ');
+  s = s.replace(/تا|حدودا|حدود|ساعت|دقیقه|صبح|ظهر|عصر|شب/g, ' ');
+  s = s.replace(/[،,؛;!؟?.\-–:]+/g, ' ');
+  s = s.replace(/^(که|رو|و|بای|دارم|داره)\s+/, '').replace(/\s+(که|رو|و|دارم|داره)$/, '').replace(/^(یه|یک)\s+/, '');
+  s = s.replace(/\s+/g, ' ').trim();
+  if(!s) s = 'کار جدید';
+  res.title = s;
+  return res;
+}
+
+/* خروجی برای محیط Node (تست) */
+if(typeof module !== 'undefined' && module.exports){
+  module.exports = { normalizeFa, parseTask, detectIntent, fuzzyFindTask, findNextWeekday, nextOccurrence, gregorianToJalali, jalaliToGregorian, jalaliMonthLen, isJalaliLeap, detectCategory };
+}
+/* ================= وضعیت کلی ================= */
+const CAT_LIST = ['کار','ارتباط','خرید','مالی','سلامت','تحصیل','خانه','سفر','شخصی'];
+const CAT_EMOJI = {'کار':'💼','ارتباط':'📞','خرید':'🛒','مالی':'💳','سلامت':'💪','تحصیل':'📚','خانه':'🏠','سفر':'✈️','شخصی':'⭐'};
+const PRIO = {
+  high: { label: 'فوری', dot: 'high' },
+  med:  { label: 'معمولی', dot: 'med' },
+  low:  { label: 'فرصت‌شد', dot: 'low' }
+};
+const REPEAT_LABEL = { none: '', daily: 'هر روز', weekly: 'هر هفته', monthly: 'هر ماه' };
+
+const state = {
+  user: null, tasks: [], settings: { sound: true, dark: false, asrUrl: '', asrAuth: '' },
+  filter: 'all', cal: null, selDay: null, editingId: null, chat: [], deferredInstall: null
+};
+
+const tasksKey = () => 'yadyar_tasks_' + (state.user ? state.user.email : 'guest');
+function saveTasks(){ LS.set(tasksKey(), state.tasks); }
+function loadTasks(){ state.tasks = LS.get(tasksKey(), []); }
+function saveSettings(){ LS.set('yadyar_settings', state.settings); }
+
+function vib(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+
+/* ================= ورود / ثبت‌نام ================= */
+let authMode = 'login';
+function setAuthMode(mode){
+  authMode = mode;
+  $('#authTabLogin').classList.toggle('on', mode === 'login');
+  $('#authTabSignup').classList.toggle('on', mode === 'signup');
+  $('#authNameField').classList.toggle('hidden', mode === 'login');
+  $('#authSubmit').textContent = mode === 'login' ? 'ورود به یادیار' : 'ساخت حساب جدید';
+  $('#authError').classList.add('hidden');
+}
+function authErr(msg){
+  const el = $('#authError');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+async function submitAuth(){
+  const email = $('#authEmail').value.trim().toLowerCase();
+  const pass = $('#authPass').value;
+  const name = $('#authName').value.trim() || (email.split('@')[0] || 'دوست من');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return authErr('ایمیل معتبر نیست 🙂');
+  if(pass.length < 4) return authErr('رمز عبور حداقل ۴ کاراکتر باشه');
+  try{
+    const user = authMode === 'signup' ? await signupUser(name, email, pass) : await loginUser(email, pass);
+    enterApp(user);
+  }catch(e){ authErr(e.message); }
+}
+function enterApp(user){
+  state.user = user;
+  LS.set('yadyar_session', { email: user.email, at: Date.now() });
+  const savedName = (Users.all()[user.email] || {}).name;
+  state.userName = savedName || user.name;
+  state.settings = Object.assign({ sound: true, dark: false, asrUrl: '', asrAuth: '' }, LS.get('yadyar_settings', {}));
+  loadTasks();
+  $('#authScreen').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#btnInstall').classList.remove('hidden'); /* همیشه در دسترس؛ کلیک = راهنمای نصب یا نصب یک‌تپی */
+  const todayJ = gregorianToJalali(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+  state.cal = { jy: todayJ[0], jm: todayJ[1] };
+  state.selDay = dateKey(new Date());
+  renderAll();
+  greetUser();
+}
+function logout(){
+  LS.del('yadyar_session');
+  state.user = null;
+  $('#setOverlay').classList.add('hidden');
+  $('#app').classList.add('hidden');
+  $('#authScreen').classList.remove('hidden');
+}
+function greetUser(){
+  const h = new Date().getHours();
+  const part = h < 12 ? 'صبح بخیر' : h < 17 ? 'ظهر بخیر' : h < 21 ? 'عصر بخیر' : 'شب بخیر';
+  $('#hdrGreet').textContent = `${part}، ${state.userName} 👋`;
+  const pending = state.tasks.filter(t => !t.done).length;
+  $('#hdrDate').textContent = `${fmtJalali(new Date())} • ${pending ? toFa(pending) + ' کار در انتظار ⏳' : 'همه‌چیز مرتبه ✨'}`;
+}
+
+/* ================= پیام‌های چت ================= */
+function pushMsg(who, text, html){
+  const log = $('#chatLog');
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  if(html) div.innerHTML = html;
+  else div.textContent = text;
+  log.appendChild(div);
+  log.parentElement.scrollTop = 999999;
+  if(!html){
+    state.chat.push({ who, text });
+    if(state.chat.length > 60) state.chat = state.chat.slice(-60);
+    LS.set('yadyar_chat_' + (state.user ? state.user.email : 'guest'), state.chat);
+  }
+  return div;
+}
+function restoreChat(){
+  state.chat = LS.get('yadyar_chat_' + (state.user ? state.user.email : 'guest'), []);
+  const log = $('#chatLog');
+  log.innerHTML = '';
+  if(state.chat.length === 0){
+    pushMsg('bot', `سلام ${state.userName} عزیز 👋 من یادیارم!\nهر کاری داری رو بهم بگو — صوتی 🎙️ یا نوشتاری ⌨️ — خودم زمان، دسته، اولویت و تکرارش رو می‌فهمم و سر موعد یادت می‌ندازم.\nمثلا بنویس: «فردا ساعت ۵ عصر به مامان زنگ بزن»`);
+  } else {
+    for(const m of state.chat) pushMsg(m.who, m.text);
+  }
+}
+function showTyping(){
+  return pushMsg('bot', '', '<span class="typing"><i></i><i></i><i></i></span>');
+}
+
+/* ---------- ارسال و مسیریابی ---------- */
+function userSay(text){
+  text = String(text || '').trim();
+  if(!text) return;
+  pushMsg('user', text);
+  $('#chatInput').value = '';
+  $('#chatInput').style.height = 'auto';
+  const typing = showTyping();
+  setTimeout(() => {
+    typing.remove();
+    routeIntent(text);
+  }, 420);
+}
+function routeIntent(text){
+  const intent = detectIntent(text);
+  if(intent.type === 'help') return replyHelp();
+  if(intent.type === 'chat') return replySmallTalk();
+  if(intent.type === 'query') return replyQuery(intent.scope);
+  if(intent.type === 'add') return handleAdd(text);
+  if(intent.type === 'complete') return handleComplete(intent.text);
+  if(intent.type === 'delete') return handleDelete(intent.text);
+}
+function replyHelp(){
+  pushMsg('bot', `من این کارها رو بلدم 🤖\n\n⏰ زمان: «فردا ساعت ۵ عصر» • «نیم ساعت دیگه» • «شنبه ساعت ۱۰ صبح» • «۲۵ آبان» • «امشب ساعت ۹»\n🔁 تکرار: «هر روز» • «هر هفته شنبه» • «هر ماه»\n⚡ اولویت: «فوری» «مهم» → پررنگ • «اگه شد» → کم‌رنگ\n📂 دسته‌بندی خودکار: کار، خرید، سلامت، مالی و…\n🔔 یادآوری: «نیم ساعت قبل یادم بنداز»\n\n❓ پرسیدن: «چه کارایی امروز دارم؟»\n✅ انجام‌شدن: «جلسه با تیم تموم شد»\n🗑 حذف: «حذف خرید»`);
+}
+const CHIT = ['منم خوبم، مخصوصا وقتی کارهات سر موعد انجام بشه 😄🙌','سلام سلام! چه خبر؟ کاری داری بسپاری بهم؟ 💪','در خدمتتم! یه کار بگو تا برات بچینمش ✨'];
+function replySmallTalk(){ pushMsg('bot', CHIT[Math.floor(Math.random() * CHIT.length)]); }
+
+function whenText(t){
+  if(!t.due) return 'بدون موعد';
+  const due = new Date(t.due), now = new Date();
+  const time = t.hasTime ? ' ساعت ' + toFa(pad2(due.getHours()) + ':' + pad2(due.getMinutes())) : '';
+  if(t.done) return fmtJalali(due).split(' ').slice(1).join(' ') + time;
+  if(due < now){
+    const mins = Math.floor((now - due) / 60000);
+    if(mins < 1440 && dateKey(due) === dateKey(now)) return `⚠️ امروز${time} — دیر شده!`;
+    return `⚠️ ${toFa(Math.floor(mins / 1440))} روز دیر شده`;
+  }
+  const mins = Math.floor((due - now) / 60000);
+  if(mins < 1) return 'همین الان!';
+  if(mins < 60) return `${toFa(mins)} دقیقه مونده`;
+  if(mins < 360 && dateKey(due) === dateKey(now)) return `امروز ساعت ${toFa(pad2(due.getHours()) + ':' + pad2(due.getMinutes()))}`;
+  if(dateKey(due) === dateKey(addDays(now, 1))) return `فردا${time}`;
+  if(dateKey(due) === dateKey(now)) return `امروز${time}`;
+  const [jy, jm, jd] = gregorianToJalali(due.getFullYear(), due.getMonth() + 1, due.getDate());
+  return `${toFa(jd)} ${J_MONTHS[jm]}${time}`;
+}
+function summarize(t){
+  const bits = [];
+  bits.push('🗓 ' + whenText(t));
+  bits.push('📂 ' + CAT_EMOJI[t.cat] + ' ' + t.cat);
+  bits.push('⚡ ' + PRIO[t.prio].label);
+  if(REPEAT_LABEL[t.repeat]) bits.push('🔁 ' + REPEAT_LABEL[t.repeat]);
+  if(t.remind) bits.push('⏳ ' + (t.remind >= 1440 ? 'یک روز' : t.remind >= 60 ? toFa(t.remind / 60) + ' ساعت' : toFa(t.remind) + ' دقیقه') + ' قبل یادآوری');
+  return `📌 «${t.title}» ثبت شد!\n${bits.join('  |  ')}`;
+}
+
+/* ---------- افزودن کار با کارت تأیید ---------- */
+function handleAdd(text){
+  const parsed = parseTask(text, new Date());
+  const log = $('#chatLog');
+  const bot = document.createElement('div');
+  bot.className = 'msg bot';
+  const intro = document.createElement('div');
+  intro.textContent = 'فهمیدم! یه نگاه بنداز، اگه درسته ثبتش کنم؟ 👇';
+  intro.style.marginBottom = '6px';
+  bot.appendChild(intro);
+  bot.appendChild(buildConfirmCard(parsed));
+  log.appendChild(bot);
+  log.parentElement.scrollTop = 999999;
+}
+function buildConfirmCard(p){
+  const card = document.createElement('div');
+  card.className = 'confirm-card';
+  const dueVal = p.due ? toLocalInput(p.due) : '';
+  card.innerHTML = `
+    <div class="fld"><label>📌 عنوان</label><input class="c-title" value="${esc(p.title)}"></div>
+    <div class="fld"><label>🗓 موعد</label><input class="c-due" type="datetime-local" value="${dueVal}"></div>
+    <div class="fld"><label>📂 دسته</label><div class="chips c-cats"></div></div>
+    <div class="fld"><label>⚡ اولویت</label><div class="chips c-prios"></div></div>
+    <div class="mrow">
+      <div class="fld"><label>🔁 تکرار</label><select class="c-repeat">
+        <option value="none" ${p.repeat==='none'?'selected':''}>بدون تکرار</option>
+        <option value="daily" ${p.repeat==='daily'?'selected':''}>هر روز</option>
+        <option value="weekly" ${p.repeat==='weekly'?'selected':''}>هر هفته</option>
+        <option value="monthly" ${p.repeat==='monthly'?'selected':''}>هر ماه</option>
+      </select></div>
+      <div class="fld"><label>🔔 یادآوری</label><select class="c-remind">
+        <option value="0" ${!p.remindBefore?'selected':''}>در زمان خودش</option>
+        <option value="5">۵ دقیقه قبل</option>
+        <option value="15">۱۵ دقیقه قبل</option>
+        <option value="30" ${p.remindBefore===30?'selected':''}>نیم ساعت قبل</option>
+        <option value="60">۱ ساعت قبل</option>
+        <option value="1440">یک روز قبل</option>
+      </select></div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-sm btn-ok c-save">ثبت ✔</button>
+      <button class="btn-sm btn-ghost c-cancel">بی‌خیال</button>
+    </div>`;
+  // chips دسته
+  const cats = card.querySelector('.c-cats');
+  CAT_LIST.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c === p.cat ? ' on' : '');
+    b.textContent = CAT_EMOJI[c] + ' ' + c;
+    b.onclick = () => { cats.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); };
+    cats.appendChild(b);
+  });
+  const prios = card.querySelector('.c-prios');
+  ['high','med','low'].forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (k === p.prio ? ' on' : '');
+    b.textContent = (k === 'high' ? '🔴' : k === 'med' ? '🟡' : '🟢') + ' ' + PRIO[k].label;
+    b.onclick = () => { prios.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); };
+    prios.appendChild(b);
+  });
+  card.querySelector('.c-cancel').onclick = () => { const m = card.closest('.msg'); if(m) m.remove(); pushMsg('bot', 'باشه، ثبت نشد 🙂'); };
+  card.querySelector('.c-save').onclick = () => {
+    const title = card.querySelector('.c-title').value.trim() || 'کار جدید';
+    const dv = card.querySelector('.c-due').value;
+    const cat = card.querySelector('.c-cats .on').textContent.replace(/^\S+\s/, '');
+    const prioSel = card.querySelector('.c-prios .on').textContent;
+    const prio = prioSel.startsWith('🔴') ? 'high' : prioSel.startsWith('🟢') ? 'low' : 'med';
+    const task = {
+      id: uid(), title,
+      due: dv || null, hasTime: !!dv,
+      cat: CAT_LIST.find(c => cat.includes(c)) || 'شخصی', prio,
+      repeat: card.querySelector('.c-repeat').value,
+      repeatWd: p.repeatWd,
+      remind: +card.querySelector('.c-remind').value,
+      done: false, createdAt: new Date().toISOString(), notifiedAt: null, notifiedPre: null
+    };
+    state.tasks.push(task);
+    saveTasks();
+    const m = card.closest('.msg'); if(m) m.remove();
+    pushMsg('bot', summarize(task));
+    renderAll();
+    beep();
+    toast('✅ ثبت شد: ' + task.title);
+    maybeAskNotif();
+  };
+  return card;
+}
+function maybeAskNotif(){
+  if('Notification' in window && Notification.permission === 'default'){
+    $('#notifBanner').classList.add('show');
+    $('#btnNotif').classList.remove('hidden');
+  }
+}
+
+/* ---------- پرسش از لیست ---------- */
+function replyQuery(scope){
+  const now = new Date();
+  const open = state.tasks.filter(t => !t.done);
+  let list = [];
+  if(scope === 'today') list = open.filter(t => t.due && dateKeyOfDue(t.due) === dateKey(now));
+  else if(scope === 'tomorrow') list = open.filter(t => t.due && dateKeyOfDue(t.due) === dateKey(addDays(now, 1)));
+  else if(scope === 'week') list = open.filter(t => t.due && dateKeyOfDue(t.due) <= dateKey(addDays(now, 7)) && new Date(t.due) >= new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  else if(scope === 'over') list = open.filter(t => t.due && new Date(t.due) < now);
+  else list = open.slice();
+  list.sort((a, b) => String(a.due || '9999').localeCompare(String(b.due || '9999')));
+  const scopeName = { today: 'امروز', tomorrow: 'فردا', week: 'این هفته', over: 'سررسیده', all: 'کل' }[scope];
+  if(list.length === 0){
+    const emptyMsg = scope === 'over' ? 'آفرین! هیچی سررسیده نداری 🌟' : scope === 'today' ? 'برای امروز برنامه‌ای ثبت نکردی 🌴 وقت آزادیه!' : 'چیزی برای این بازه پیدا نکردم 🤷 می‌تونی کار جدید بگی!';
+    return pushMsg('bot', emptyMsg);
+  }
+  const lines = list.slice(0, 10).map((t, i) => `${toFa(i + 1)}. ${CAT_EMOJI[t.cat]} ${t.title} — ${whenText(t)}`).join('\n');
+  pushMsg('bot', `📋 کارهای ${scopeName} (${toFa(list.length)} مورد):\n\n${lines}${list.length > 10 ? '\n\nو ' + toFa(list.length - 10) + ' مورد دیگه در تب «کارها»' : ''}`);
+}
+
+/* ---------- انجام‌شدن و حذف ---------- */
+function handleComplete(text){
+  const open = state.tasks.filter(t => !t.done);
+  const t = fuzzyFindTask(open, text);
+  if(!t) return pushMsg('bot', 'کار موردنظر رو تو لیست پیدا نکردم 🤔 عنوان دقیق‌ترش رو بگو یا از تب «کارها» تیکش رو بزن.');
+  t.done = true;
+  t.doneAt = new Date().toISOString();
+  let extra = '';
+  if(t.repeat !== 'none'){
+    const nxt = nextOccurrence(new Date(t.due || new Date()), t.repeat, t.repeatWd);
+    if(nxt){
+      state.tasks.push({
+        id: uid(), title: t.title, due: toLocalInput(nxt), hasTime: t.hasTime, cat: t.cat, prio: t.prio,
+        repeat: t.repeat, repeatWd: t.repeatWd, remind: t.remind, done: false,
+        createdAt: new Date().toISOString(), notifiedAt: null, notifiedPre: null
+      });
+      extra = `\n🔁 نسخه بعدی‌اش هم برای ${whenText({ due: toLocalInput(nxt), hasTime: t.hasTime, done: false })} ساخته شد.`;
+    }
+  }
+  saveTasks(); renderAll();
+  celebrate(); beep();
+  pushMsg('bot', `ایول! «${t.title}» انجام شد ✅🎉${extra}`);
+}
+function handleDelete(text){
+  const t = fuzzyFindTask(state.tasks, text);
+  if(!t) return pushMsg('bot', 'چیزی با این اسم پیدا نکردم که حذف کنم 🤔');
+  state.tasks = state.tasks.filter(x => x.id !== t.id);
+  saveTasks(); renderAll();
+  pushMsg('bot', `«${t.title}» حذف شد 🗑`);
+}
+
+/* ================= نمای کارها ================= */
+function taskGroups(){
+  const now = new Date();
+  const g = { over: [], today: [], tomorrow: [], week: [], later: [], none: [], done: [] };
+  for(const t of state.tasks){
+    if(t.done){ g.done.push(t); continue; }
+    if(!t.due){ g.none.push(t); continue; }
+    const due = new Date(t.due), dk = dateKeyOfDue(t.due);
+    if(due < now) g.over.push(t);
+    else if(dk === dateKey(now)) g.today.push(t);
+    else if(dk === dateKey(addDays(now, 1))) g.tomorrow.push(t);
+    else if(dk <= dateKey(addDays(now, 7))) g.week.push(t);
+    else g.later.push(t);
+  }
+  const byDue = (a, b) => String(a.due || '9999').localeCompare(String(b.due || '9999'));
+  Object.values(g).forEach(arr => arr.sort(byDue));
+  return g;
+}
+const GROUP_META = [
+  ['over', '🔴 سررسیده'], ['today', '☀️ امروز'], ['tomorrow', '🌅 فردا'],
+  ['week', '🗓 این هفته'], ['later', '🔭 بعداً'], ['none', '📥 بدون موعد'], ['done', '✅ انجام‌شده']
+];
+function renderTasks(){
+  const wrap = $('#tasksList');
+  wrap.innerHTML = '';
+  const g = taskGroups();
+  const show = state.filter;
+  const keys = show === 'all' ? ['over','today','tomorrow','week','later','none','done']
+    : show === 'week' ? ['today','tomorrow','week']
+    : show === 'done' ? ['done'] : [show];
+  let total = 0;
+  for(const k of keys){
+    const items = g[k] || [];
+    total += items.length;
+    if(items.length === 0) continue;
+    const h = document.createElement('div');
+    h.className = 'group-title';
+    h.innerHTML = `${GROUP_META.find(x => x[0] === k)[1]} <span class="n">${toFa(items.length)}</span>`;
+    wrap.appendChild(h);
+    for(const t of items) wrap.appendChild(taskItemDom(t));
+  }
+  if(total === 0){
+    wrap.innerHTML = `<div class="empty"><span class="big">🌤</span>اینجا خالیه!<br>از تب «چت» بگو: <b>فردا ساعت ۸ صبح جلسه دارم</b></div>`;
+  }
+}
+function taskItemDom(t){
+  const div = document.createElement('div');
+  div.className = 'task' + (t.done ? ' done' : '') + (!t.done && t.due && new Date(t.due) < new Date() ? ' overdue' : '');
+  div.innerHTML = `
+    <button class="tick" title="انجام شد">${t.done ? '✓' : ''}</button>
+    <div class="body">
+      <div class="t-title">${esc(t.title)}<span class="pdot ${PRIO[t.prio].dot}" title="${PRIO[t.prio].label}"></span></div>
+      <div class="t-meta">
+        <span class="tag ${!t.done && t.due && new Date(t.due) < new Date() ? 'over' : 'time'}">${t.due ? '⏰ ' + whenText(t) : '📥 بدون موعد'}</span>
+        <span class="tag">${CAT_EMOJI[t.cat]} ${t.cat}</span>
+        ${REPEAT_LABEL[t.repeat] ? `<span class="tag">🔁 ${REPEAT_LABEL[t.repeat]}</span>` : ''}
+        ${t.remind ? `<span class="tag">🔔</span>` : ''}
+      </div>
+    </div>`;
+  div.querySelector('.tick').onclick = e => { e.stopPropagation(); toggleDone(t.id); };
+  div.querySelector('.body').onclick = () => openEdit(t.id);
+  return div;
+}
+function toggleDone(id){
+  const t = state.tasks.find(x => x.id === id);
+  if(!t) return;
+  t.done = !t.done;
+  t.doneAt = t.done ? new Date().toISOString() : null;
+  t.notifiedAt = t.notifiedPre = null;
+  let extra = '';
+  if(t.done && t.repeat !== 'none' && t.due){
+    const nxt = nextOccurrence(new Date(t.due), t.repeat, t.repeatWd);
+    if(nxt){
+      state.tasks.push({ id: uid(), title: t.title, due: toLocalInput(nxt), hasTime: t.hasTime, cat: t.cat, prio: t.prio,
+        repeat: t.repeat, repeatWd: t.repeatWd, remind: t.remind, done: false, createdAt: new Date().toISOString(), notifiedAt: null, notifiedPre: null });
+      extra = ' — نسخه بعدی: ' + whenText({ due: toLocalInput(nxt), hasTime: t.hasTime, done: false });
+    }
+  }
+  saveTasks(); renderAll();
+  if(t.done){ celebrate(); beep(); toast('🎉 آفرین!' + extra); }
+}
+
+/* ---------- ویرایش ---------- */
+function openEdit(id){
+  const t = state.tasks.find(x => x.id === id);
+  if(!t) return;
+  state.editingId = id;
+  $('#fTitle').value = t.title;
+  $('#fDue').value = t.due || '';
+  $('#fCat').value = t.cat;
+  $('#fPrio').value = t.prio;
+  $('#fRepeat').value = t.repeat;
+  $('#fRemind').value = String(t.remind || 0);
+  $('#editOverlay').classList.remove('hidden');
+}
+function saveEdit(){
+  const t = state.tasks.find(x => x.id === state.editingId);
+  if(!t) return;
+  t.title = $('#fTitle').value.trim() || t.title;
+  const dv = $('#fDue').value;
+  t.due = dv || null;
+  t.hasTime = !!dv;
+  t.cat = $('#fCat').value;
+  t.prio = $('#fPrio').value;
+  t.repeat = $('#fRepeat').value;
+  t.remind = +$('#fRemind').value;
+  t.notifiedAt = t.notifiedPre = null;
+  saveTasks(); renderAll();
+  $('#editOverlay').classList.add('hidden');
+  toast('✔ ذخیره شد');
+}
+function deleteEdit(){
+  state.tasks = state.tasks.filter(x => x.id !== state.editingId);
+  saveTasks(); renderAll();
+  $('#editOverlay').classList.add('hidden');
+  toast('🗑 حذف شد');
+}
+
+/* ================= نوار «به‌زودی» ================= */
+function renderUpcoming(){
+  const strip = $('#upcomingStrip');
+  strip.innerHTML = '';
+  const now = new Date();
+  const list = state.tasks.filter(t => !t.done && t.due).sort((a, b) => a.due.localeCompare(b.due));
+  const soon = list.filter(t => new Date(t.due) >= now).slice(0, 4);
+  const late = list.filter(t => new Date(t.due) < now).slice(0, 2);
+  for(const t of [...late, ...soon]){
+    const c = document.createElement('button');
+    c.className = 'up-chip' + (new Date(t.due) < now ? ' over' : '');
+    c.innerHTML = `<span class="t">${esc(t.title)}</span><span class="w">${t.due ? '⏰ ' + whenText(t) : ''}</span>`;
+    c.onclick = () => openEdit(t.id);
+    strip.appendChild(c);
+  }
+}
+/* ================= تقویم شمسی ================= */
+function renderCalendar(){
+  const { jy, jm } = state.cal;
+  $('#calTitle').textContent = `${J_MONTHS[jm]} ${toFa(jy)}`;
+  const g = jalaliToGregorian(jy, jm, 1);
+  const first = new Date(g[0], g[1] - 1, g[2]);
+  const startCol = (first.getDay() + 1) % 7; // شنبه = ستون ۰
+  const len = jalaliMonthLen(jy, jm);
+  const [gEndY, gEndM] = jalaliToGregorian(jy, jm, len);
+  $('#calSub').textContent = `میلادی: ${toFa(g[0])}/${toFa(pad2(g[1]))} تا ${toFa(gEndY)}/${toFa(pad2(gEndM))}`;
+  const grid = $('#calGrid');
+  grid.innerHTML = '';
+  for(let i = 0; i < startCol; i++){
+    const b = document.createElement('div');
+    b.className = 'cal-d dim';
+    grid.appendChild(b);
+  }
+  const todayK = dateKey(new Date());
+  for(let d = 1; d <= len; d++){
+    const gd2 = jalaliToGregorian(jy, jm, d);
+    const date = new Date(gd2[0], gd2[1] - 1, gd2[2]);
+    const k = dateKey(date);
+    const cell = document.createElement('div');
+    const count = state.tasks.filter(t => t.due && dateKeyOfDue(t.due) === k).length;
+    cell.className = 'cal-d' + (k === todayK ? ' today' : '') + (k === state.selDay ? ' sel' : '');
+    cell.innerHTML = `<span>${toFa(d)}</span><span class="dots">${count ? '<i></i>'.repeat(Math.min(count, 3)) : ''}</span>`;
+    cell.onclick = () => { state.selDay = k; renderCalendar(); renderDayPanel(); };
+    grid.appendChild(cell);
+  }
+}
+function renderDayPanel(){
+  const k = state.selDay;
+  const panel = $('#dayPanel');
+  if(!k) return;
+  const [y, m, d] = k.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const list = state.tasks.filter(t => t.due && dateKeyOfDue(t.due) === k).sort((a, b) => String(a.due).localeCompare(String(b.due)));
+  panel.innerHTML = `<div class="group-title">📌 کارهای ${fmtJalali(date)} <span class="n">${toFa(list.length)}</span></div>`;
+  if(list.length === 0){
+    panel.innerHTML += `<div class="empty" style="padding:20px"><span class="big">🌴</span>این روز کاری ثبت نشده</div>`;
+  } else {
+    for(const t of list) panel.appendChild(taskItemDom(t));
+  }
+}
+function shiftCal(dir){
+  let { jy, jm } = state.cal;
+  jm += dir;
+  if(jm > 12){ jm = 1; jy++; }
+  if(jm < 1){ jm = 12; jy--; }
+  state.cal = { jy, jm };
+  state.selDay = null;
+  renderCalendar();
+  $('#dayPanel').innerHTML = '';
+}
+
+/* ================= جستجو ================= */
+function renderSearch(){
+  const q = normalizeFa($('#searchInput').value);
+  const wrap = $('#searchResults');
+  wrap.innerHTML = '';
+  if(!q){
+    wrap.innerHTML = `<div class="empty"><span class="big">🔍</span>یه کلمه بنویس؛ مثلا «جلسه» یا «خرید» یا «دارو»</div>`;
+    return;
+  }
+  const list = state.tasks.filter(t => normalizeFa(t.title).includes(q) || normalizeFa(t.cat).includes(q) || normalizeFa(PRIO[t.prio].label).includes(q));
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="empty"><span class="big">🕵️</span>چیزی پیدا نشد</div>`;
+    return;
+  }
+  const h = document.createElement('div');
+  h.className = 'group-title';
+  h.innerHTML = `نتیجه <span class="n">${toFa(list.length)}</span>`;
+  wrap.appendChild(h);
+  list.forEach(t => wrap.appendChild(taskItemDom(t)));
+}
+
+/* ================= آمار ================= */
+const DOW_MINI = { 6:'ش', 0:'ی', 1:'د', 2:'س', 3:'چ', 4:'پ', 5:'ج' };
+function renderStats(){
+  const all = state.tasks;
+  const doneList = all.filter(t => t.done);
+  const rate = all.length ? Math.round(doneList.length / all.length * 100) : 0;
+  $('#stTotal').textContent = toFa(all.length);
+  $('#stDone').textContent = toFa(doneList.length);
+  $('#stRate').textContent = toFa(rate) + '٪';
+  // روزهای پیاپی
+  let streak = 0;
+  const doneDays = new Set(doneList.map(t => t.doneAt ? dateKey(new Date(t.doneAt)) : null).filter(Boolean));
+  let probe = new Date();
+  if(!doneDays.has(dateKey(probe))) probe = addDays(probe, -1);
+  while(doneDays.has(dateKey(probe))){ streak++; probe = addDays(probe, -1); }
+  $('#stStreak').textContent = toFa(streak) + ' 🔥';
+  // دسته‌ها
+  const catCount = {};
+  all.forEach(t => { catCount[t.cat] = (catCount[t.cat] || 0) + 1; });
+  const maxC = Math.max(1, ...Object.values(catCount));
+  const cb = $('#catBars');
+  cb.innerHTML = '';
+  Object.entries(catCount).sort((a, b) => b[1] - a[1]).forEach(([c, n]) => {
+    cb.innerHTML += `<div class="bar-row"><span class="lbl">${CAT_EMOJI[c] || ''} ${c}</span><div class="track"><div class="fill" style="width:${Math.round(n / maxC * 100)}%"></div></div><span class="num">${toFa(n)}</span></div>`;
+  });
+  if(!all.length) cb.innerHTML = `<div class="empty" style="padding:14px">هنوز کاری ثبت نشده</div>`;
+  // اولویت‌ها (کارهای باز)
+  const open = all.filter(t => !t.done);
+  const pc = { high: 0, med: 0, low: 0 };
+  open.forEach(t => pc[t.prio]++);
+  const tot = Math.max(1, open.length);
+  const segs = [['high','#EF4444'],['med','#F59E0B'],['low','#10B981']];
+  let acc = 0, stops = [];
+  segs.forEach(([k, col]) => {
+    const from = acc / tot * 100;
+    acc += pc[k];
+    const to = acc / tot * 100;
+    if(to > from) stops.push(`${col} ${from.toFixed(1)}% ${to.toFixed(1)}%`);
+  });
+  $('#prioDonut').style.background = stops.length ? `conic-gradient(${stops.join(',')})` : 'var(--line)';
+  $('#prioCenter').textContent = open.length ? toFa(open.length) + ' کار باز' : '—';
+  $('#prioLegend').innerHTML = segs.map(([k, col]) => `<span><i style="background:${col}"></i>${PRIO[k].label}: ${toFa(pc[k])}</span>`).join('');
+  // ۷ روز اخیر
+  const wb = $('#weekBars');
+  wb.innerHTML = '';
+  const counts = [];
+  for(let i = 6; i >= 0; i--){
+    const day = addDays(new Date(), -i);
+    const k = dateKey(day);
+    counts.push({ label: DOW_MINI[day.getDay()], n: doneList.filter(t => t.doneAt && dateKey(new Date(t.doneAt)) === k).length });
+  }
+  const maxW = Math.max(1, ...counts.map(c => c.n));
+  counts.forEach(c => {
+    wb.innerHTML += `<div class="wb"><span class="v">${c.n ? toFa(c.n) : ''}</span><div class="b" style="height:${Math.max(6, Math.round(c.n / maxW * 100))}%"></div><span class="d">${c.label}</span></div>`;
+  });
+}
+
+/* ================= یادآوری ================= */
+function fireReminder(title, body){
+  beep('alarm');
+  vib([350, 120, 350]);
+  toast('🔔 ' + body);
+  let shown = false;
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{
+      const n = new Notification(title, { body, lang: 'fa', tag: 'yadyar-' + Date.now() });
+      shown = true;
+    }catch(e){
+      if(navigator.serviceWorker){
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if(reg) reg.showNotification(title, { body, lang: 'fa' });
+        }).catch(() => {});
+      }
+    }
+  }
+  if(!shown) pushMsg('bot', `🔔 <b>یادآوری:</b> ${esc(body)}`, true);
+}
+function reminderTick(){
+  if(!state.user) return;
+  const now = new Date();
+  let changed = false;
+  for(const t of state.tasks){
+    if(t.done || !t.due) continue;
+    const due = new Date(t.due);
+    if(t.remind > 0){
+      const pre = new Date(due.getTime() - t.remind * 60000);
+      if(pre <= now && due > now && !t.notifiedPre){
+        t.notifiedPre = now.toISOString(); changed = true;
+        fireReminder('⏳ نزدیک موعد', `${t.title} — ${whenText(t)}`);
+      }
+    }
+    if(due <= now && !t.notifiedAt){
+      t.notifiedAt = now.toISOString(); changed = true;
+      fireReminder('🔔 یادآوری یادیار', `${t.title} — موعدش رسیده! ${t.hasTime ? '(' + whenText(t) + ')' : ''}`);
+    }
+  }
+  if(changed){ saveTasks(); renderUpcoming(); renderTasks(); greetUser(); }
+}
+function requestNotif(){
+  if(!('Notification' in window)){
+    toast('مرورگرت از نوتیفیکیشن پشتیبانی نمی‌کنه 😕 — ولی یادآوری داخل اپ فعاله');
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    updateNotifUi();
+    toast(p === 'granted' ? '✅ نوتیف فعال شد' : p === 'denied' ? 'نوتیف رد شد — از تنظیمات مرورگر می‌تونی فعالش کنی' : 'بعداً می‌تونی فعالش کنی');
+  });
+}
+function updateNotifUi(){
+  const has = 'Notification' in window;
+  const p = has ? Notification.permission : 'unsupported';
+  $('#btnNotif').classList.toggle('hidden', p !== 'default');
+  $('#notifBanner').classList.toggle('show', p === 'default' && !!state.user);
+  const btn = $('#btnNotifPerm');
+  if(btn) btn.textContent = p === 'granted' ? 'فعال ✔' : p === 'denied' ? 'رد شده ✋' : 'فعال‌سازی';
+}
+
+/* ================= صوت: گفتار زنده و ضبط ================= */
+let recog = null, listening = false, finalHeard = '';
+function startDictation(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    toast('🎙 مرورگرت تشخیص گفتار نداره؛ از کروم اندروید یا پنجره دسکتاپ کروم استفاده کن');
+    return;
+  }
+  if(listening){ try{ recog.stop(); }catch(e){} return; }
+  recog = new SR();
+  recog.lang = 'fa-IR';
+  recog.interimResults = true;
+  recog.continuous = false;
+  recog.maxAlternatives = 1;
+  finalHeard = '';
+  recog.onresult = e => {
+    let fin = '', inter = '';
+    for(let i = 0; i < e.results.length; i++){
+      const r = e.results[i];
+      if(r.isFinal) fin += r[0].transcript; else inter += r[0].transcript;
+    }
+    $('#micText').textContent = fin || inter || 'دارم گوش می‌دم…';
+    if(fin) finalHeard = fin;
+  };
+  recog.onerror = e => {
+    const m = e.error === 'not-allowed' ? 'اجازه میکروفن داده نشد — تو تنظیمات مرورگر فعالش کن' :
+      e.error === 'network' ? 'تشخیص گفتار به اینترنت نیاز داره' :
+      e.error === 'no-speech' ? 'صدایی نشنیدم؛ دوباره امتحان کن' : 'خطای میکروفن: ' + e.error;
+    toast('🎙 ' + m);
+  };
+  recog.onend = () => {
+    listening = false;
+    $('#micOverlay').classList.add('hidden');
+    if(finalHeard.trim()) userSay(finalHeard.trim());
+  };
+  try{
+    recog.start();
+    listening = true;
+    $('#micText').textContent = 'دارم گوش می‌دم…';
+    $('#micOverlay').classList.remove('hidden');
+    beep(); vib(60);
+  }catch(e){ toast('میکروفن در دسترس نیست'); }
+}
+function stopDictation(){ try{ recog && recog.stop(); }catch(e){} }
+
+/* ضبط فایل صوتی → سرویس ASR (روش دوم، اختیاری) */
+let mediaRec = null, recChunks = [], recStart = 0, recStream = null;
+async function toggleRecord(){
+  if(mediaRec && mediaRec.state === 'recording'){ mediaRec.stop(); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined'){
+    toast('ضبط صوت در این مرورگر ممکن نیست'); return;
+  }
+  try{
+    recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRec = new MediaRecorder(recStream);
+    recChunks = [];
+    mediaRec.ondataavailable = e => { if(e.data.size) recChunks.push(e.data); };
+    mediaRec.onstop = onRecordStop;
+    mediaRec.start();
+    recStart = Date.now();
+    $('#btnRec').classList.add('on');
+    toast('⏺ در حال ضبط… دوباره بزن تا تموم شه');
+    beep(); vib(60);
+  }catch(e){ toast('اجازه میکروفن لازمه 🎙'); }
+}
+async function onRecordStop(){
+  try{
+    recStream.getTracks().forEach(t => t.stop());
+    $('#btnRec').classList.remove('on');
+    const blob = new Blob(recChunks, { type: mediaRec.mimeType || 'audio/webm' });
+    const dur = Math.round((Date.now() - recStart) / 1000);
+    const url = (state.settings.asrUrl || '').trim();
+    if(!url){
+      toast(`⏺ ${toFa(dur)} ثانیه ضبط شد — برای تبدیل به متن، آدرس سرویس ASR رو تو ⚙️ تنظیمات وارد کن (یا از 🎙 گفتار زنده استفاده کن)`);
+      return;
+    }
+    toast('⏳ دارم صوت رو تبدیل می‌کنم…');
+    const headers = { 'Content-Type': blob.type || 'audio/webm' };
+    if((state.settings.asrAuth || '').trim()) headers['Authorization'] = state.settings.asrAuth.trim();
+    const r = await fetch(url, { method: 'POST', headers, body: blob });
+    const ct = r.headers.get('content-type') || '';
+    const data = ct.includes('json') ? await r.json() : await r.text();
+    const text = (data && typeof data === 'object' && data.text) ? data.text : String(data).trim();
+    if(text){ toast('✅ متن آماده شد'); userSay(text); }
+    else toast('سرویس متن خالی برگردوند');
+  }catch(e){ toast('خطا در تبدیل صوت: ' + e.message); }
+}
+
+/* ================= نصب PWA ================= */
+function appIcon(){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C3AED"/><stop offset="1" stop-color="#EC4899"/></linearGradient></defs><rect width="192" height="192" rx="46" fill="url(#g)"/><circle cx="96" cy="96" r="52" fill="none" stroke="#fff" stroke-width="10"/><path d="M96 62v36l26 16" stroke="#fff" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="96" cy="96" r="9" fill="#FDE047"/></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function injectManifest(){
+  try{
+    const base = location.href.replace(/[^/]*$/, '');
+    const man = {
+      name: 'یادیار — دستیار هوشمند کارها',
+      short_name: 'یادیار',
+      start_url: location.href.split('#')[0],
+      scope: base,
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#F6F4FF',
+      theme_color: '#7C3AED',
+      dir: 'rtl', lang: 'fa',
+      icons: [{ src: appIcon(), sizes: 'any', type: 'image/svg+xml', purpose: 'any' }]
+    };
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(man));
+    document.head.appendChild(link);
+    const icon = document.createElement('link');
+    icon.rel = 'icon';
+    icon.href = appIcon();
+    document.head.appendChild(icon);
+  }catch(e){}
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  state.deferredInstall = e;
+  $('#btnInstall').classList.remove('hidden');
+});
+function tryInstall(){
+  if(!state.deferredInstall){
+    openSettings();
+    toast('راهنمای نصب داخل پنجره تنظیمات 👇');
+    return;
+  }
+  state.deferredInstall.prompt();
+  state.deferredInstall.userChoice.then(() => { state.deferredInstall = null; $('#btnInstall').classList.add('hidden'); });
+}
+
+/* راهنمای نصب هوشمند — بر اساس مرورگر و نحوه باز شدن صفحه */
+function installGuideHtml(){
+  const ua = navigator.userAgent || '';
+  const isFile = location.protocol === 'file:';
+  const isChrome = /Chrome\//.test(ua) && !/Edg\/|OPR\/|SamsungBrowser|MiuiBrowser|HeyTapBrowser|VivoBrowser/.test(ua);
+  const isSamsung = /SamsungBrowser/.test(ua);
+  const isHosted = location.protocol === 'https:' || location.hostname === 'localhost';
+  let b = '<b>📲 نصب روی صفحه اصلی گوشی</b><br>';
+
+  if(!isChrome && !isSamsung){
+    b += `این صفحه الان با مرورگر کروم باز نشده ⚠️ گزینه «افزودن به صفحه اصلی» فقط تو کروم هست.<br>
+    ۱) کروم رو باز کن<br>
+    ۲) این آدرس رو کپی کن و تو نوار آدرس کروم بزن:<br>
+    <span class="ex" style="direction:ltr;display:inline-block">${esc(location.href.slice(0, 90))}</span><br>`;
+    if(isFile) b += `۳) یا از فایل‌منیجر گوشی، روی فایل یه <b>لحظه فشار بده و نگه دار</b> ← «Open with» ← کروم<br>`;
+    return b;
+  }
+  if(isSamsung){
+    b += `در سامسونگ اینترنت: منوی سه‌خط/سه‌نقطه ← <b>Add page to</b> ← <b>Home screen</b><br>`;
+    b += `یا بهتر: کروم گوگل رو باز کن و همین صفحه رو باهاش باز کن (راهنمای کروم پایین 👇)`;
+    return b;
+  }
+  if(isFile){
+    b += `کروم برای فایل‌های داخل حافظه گوشی، گزینه «افزودن به صفحه اصلی» رو حذف کرده ⚠️ این محدودیت خود کرومه — پس از یکی از راه‌های زیر برو:<br>
+    <b>راه ۱ — با GitHub: نصب واقعی با یک تپ (رایگان ۱۰۰٪، بدون دلار و کارت ✨)</b><br>
+    ۱) تو کروم، <span class="ex" style="direction:ltr;display:inline-block">github.com</span> رو باز کن ← با ایمیلت اکانت رایگان بساز<br>
+    ۲) دکمه + بالا-راست ← <span class="ex">New repository</span> ← اسمش رو بذار <span class="ex">yadyar</span> ← گزینه Public ← Create<br>
+    ۳) <span class="ex">Add file ← Upload files</span> ← فایل <span class="ex">yadyar-web-app.html</span> رو از دانلودها انتخاب کن ← پایین دکمه Commit رو بزن<br>
+    ۴) تب <span class="ex">Settings</span> ← منوی کناری <span class="ex">Pages</span> ← قسمت Source: شعبه <span class="ex">main</span> ← Save<br>
+    ۵) بعد از ۱–۲ دقیقه آدرست می‌شه: <span class="ex" style="direction:ltr;display:inline-block">نام‌اکانتت.github.io/yadyar/yadyar-web-app.html</span> ← با کروم بازش کن<br>
+    ۶) دکمه 📲 بالای اپ ظاهر می‌شه — نصب با یک تپ؛ تمام‌صفحه، با آیکون، با یادآوری 🔔<br>
+    🎁 بونوس: پوشه <span class="ex">android-app</span> رو هم تو همون ریپو آپلود کنی، تب Actions خودکار APK اندرویدی می‌سازه!<br>
+    <b>راه ۲ — سریع‌ترین: میان‌بر با Shortcut Maker</b><br>
+    ۱) از پلی‌استور اپ رایگان «<span class="ex">Shortcut Maker</span>» رو نصب کن<br>
+    ۲) Create shortcut ← Website link ← آدرس این صفحه رو بزن ← آیکون بده ← روی صفحه اصلی بذار<br>
+    (کلیک = باز شدن تو کروم؛ ولی تمام‌صفحه نیست)<br>
+    <b>راه ۳ — با فایرفاکس</b><br>
+    فایل رو با فایرفاکس باز کن ← منوی ⋮ ← <b>Add to Home screen</b>`;
+    return b;
+  }
+  if(isHosted){
+    b += `منوی ⋮ کروم ← «<b>Add to home screen</b>» یا «<b>Install app</b>»<br>
+    اگر تازه صفحه رو باز کردی، چند ثانیه صبر کن و اسکرول کن — معمولاً از خود کروم هم یه بنر «Add YadYar to Home screen» پایین میاد.<br>
+    دکمه 📲 بالای همین اپ هم نصب رو با یک تپ انجام می‌ده.`;
+    return b;
+  }
+  return b + 'منوی ⋮ کروم ← «Add to home screen»';
+}
+
+/* ================= تنظیمات ================= */
+function openSettings(){
+  $('#setName').value = state.userName || '';
+  $('#setAsrUrl').value = state.settings.asrUrl || '';
+  $('#setAsrAuth').value = state.settings.asrAuth || '';
+  $('#swSound').classList.toggle('on', state.settings.sound !== false);
+  $('#swDark').classList.toggle('on', !!state.settings.dark);
+  const ig = $('#installGuide');
+  if(ig) ig.innerHTML = installGuideHtml();
+  updateNotifUi();
+  $('#setOverlay').classList.remove('hidden');
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', state.settings.dark ? 'dark' : 'light');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', state.settings.dark ? '#17131F' : '#7C3AED');
+}
+function exportData(){
+  const data = { app: 'yadyar', version: 1, exportedAt: new Date().toISOString(), user: state.user, tasks: state.tasks };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'yadyar-backup-' + dateKey(new Date()) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  toast('💾 فایل پشتیبان ذخیره شد');
+}
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data || !Array.isArray(data.tasks)) throw new Error('ساختار فایل درست نیست');
+      state.tasks = data.tasks;
+      saveTasks(); renderAll();
+      toast('📥 ' + toFa(data.tasks.length) + ' کار بازیابی شد');
+      $('#setOverlay').classList.add('hidden');
+    }catch(e){ toast('فایل پشتیبان معتبر نیست: ' + e.message); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= رندر سراسری و رویدادها ================= */
+function renderAll(){
+  applyTheme();
+  greetUser();
+  restoreChatIfNeeded();
+  renderUpcoming();
+  renderTasks();
+  renderCalendar();
+  renderDayPanel();
+  renderSearch();
+  renderStats();
+}
+let chatRestored = false;
+function restoreChatIfNeeded(){
+  if(chatRestored) return;
+  chatRestored = true;
+  restoreChat();
+}
+function switchView(name){
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  $$('.nav-in button').forEach(b => b.classList.toggle('on', b.dataset.view === name));
+  if(name === 'calendar'){ renderCalendar(); renderDayPanel(); }
+  if(name === 'stats') renderStats();
+  if(name === 'search') renderSearch();
+  window.scrollTo(0, 0);
+}
+function wireEvents(){
+  // ورود
+  $('#authTabLogin').onclick = () => setAuthMode('login');
+  $('#authTabSignup').onclick = () => setAuthMode('signup');
+  $('#authSubmit').onclick = submitAuth;
+  $('#authPass').addEventListener('keydown', e => { if(e.key === 'Enter') submitAuth(); });
+  $('#authGuest').onclick = () => enterApp({ email: 'guest', name: 'مهمان' });
+  // چت
+  $('#btnSend').onclick = () => userSay($('#chatInput').value);
+  $('#chatInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); userSay($('#chatInput').value); }
+  });
+  $('#chatInput').addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+  });
+  $('#btnMic').onclick = startDictation;
+  $('#btnRec').onclick = toggleRecord;
+  $('#micStop').onclick = stopDictation;
+  $$('#chipsRow .chip').forEach(c => c.onclick = () => userSay(c.textContent));
+  // تب‌ها
+  $$('.nav-in button').forEach(b => b.onclick = () => switchView(b.dataset.view));
+  // فیلتر کارها
+  $$('#taskFilters .chip').forEach(c => c.onclick = () => {
+    $$('#taskFilters .chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    state.filter = c.dataset.f;
+    renderTasks();
+  });
+  // تقویم
+  $('#calPrev').onclick = () => shiftCal(-1);
+  $('#calNext').onclick = () => shiftCal(1);
+  // جستجو
+  $('#searchInput').addEventListener('input', renderSearch);
+  // ویرایش
+  $('#btnSaveTask').onclick = saveEdit;
+  $('#btnDeleteTask').onclick = deleteEdit;
+  $('#btnCloseEdit').onclick = () => $('#editOverlay').classList.add('hidden');
+  // تنظیمات
+  $('#btnSettings').onclick = openSettings;
+  $('#btnCloseSet').onclick = () => $('#setOverlay').classList.add('hidden');
+  $('#btnNotif').onclick = requestNotif;
+  $('#btnEnableNotif').onclick = requestNotif;
+  $('#btnNotifPerm').onclick = requestNotif;
+  $('#btnInstall').onclick = tryInstall;
+  $('#swSound').onclick = function(){
+    state.settings.sound = !state.settings.sound;
+    this.classList.toggle('on', state.settings.sound);
+    saveSettings();
+    if(state.settings.sound) beep();
+  };
+  $('#swDark').onclick = function(){
+    state.settings.dark = !state.settings.dark;
+    this.classList.toggle('on', state.settings.dark);
+    saveSettings(); applyTheme();
+  };
+  $('#setAsrUrl').addEventListener('change', function(){ state.settings.asrUrl = this.value.trim(); saveSettings(); });
+  $('#setAsrAuth').addEventListener('change', function(){ state.settings.asrAuth = this.value.trim(); saveSettings(); });
+  $('#btnExport').onclick = exportData;
+  $('#btnImport').onclick = () => $('#importFile').click();
+  $('#importFile').addEventListener('change', function(){ if(this.files[0]) importData(this.files[0]); this.value = ''; });
+  $('#btnLogout').onclick = logout;
+  $('#btnClearAll').onclick = function(){
+    if(!confirm('مطمئنی؟ همه کارها پاک می‌شن!')) return;
+    state.tasks = [];
+    saveTasks(); renderAll();
+    $('#setOverlay').classList.add('hidden');
+    toast('🧹 همه کارها پاک شد');
+  };
+  // کلیک روی پس‌زمینه مودال‌ها
+  [['#editOverlay', '#editOverlay .modal'], ['#setOverlay', '#setOverlay .modal']].forEach(([ov]) => {
+    $(ov).addEventListener('click', e => { if(e.target === $(ov)) $(ov).classList.add('hidden'); });
+  });
+  // یادآوری
+  setInterval(reminderTick, 20000);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden){ reminderTick(); updateNotifUi(); } });
+}
+
+/* ================= شروع ================= */
+function boot(){
+  injectManifest();
+  // پر کردن انتخاب دسته در مودال ویرایش
+  const sel = $('#fCat');
+  CAT_LIST.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = CAT_EMOJI[c] + ' ' + c;
+    sel.appendChild(o);
+  });
+  wireEvents();
+  // بازگشت نشست قبلی
+  const sess = LS.get('yadyar_session', null);
+  if(sess && sess.email){
+    const users = Users.all();
+    if(users[sess.email] || sess.email === 'guest'){
+      const name = sess.email === 'guest' ? 'مهمان' : users[sess.email].name;
+      enterApp({ email: sess.email, name });
+      return;
+    }
+  }
+  $('#authScreen').classList.remove('hidden');
+}
+document.addEventListener('DOMContentLoaded', boot);
+
+</script>
+</body>
+</html>
